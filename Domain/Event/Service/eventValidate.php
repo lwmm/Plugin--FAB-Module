@@ -28,10 +28,8 @@ class eventValidate
                 "ansprechpartner_mail",
                 "stellvertreter_mail",
                 "standardbetrag");
-                #"first_date",
-                #"last_date");
         
-            $this->errors = array();
+        $this->errors = array();
     }
 
     public function setValues($array) 
@@ -76,7 +74,7 @@ class eventValidate
             if(ctype_digit($value)){
                 return true;
             }else{
-                $this->addError("id", 1, array("errormsg" => "id darf nur aus Zahlen bestehen."));
+                $this->addError("id", 6);
                 return false;
             }
         }
@@ -114,22 +112,22 @@ class eventValidate
     
     function anmeldefrist_beginnValidate($value)
     {
-        return $this->requiredDateValidation("anmeldefrist_beginn", $value);
+        return $this->dateValidation("anmeldefrist_beginn", $value);
     }
     
     function anmeldefrist_endeValidate($value)
     {
-        return $this->requiredDateValidation("anmeldefrist_ende", $value);
+        return $this->dateValidation("anmeldefrist_ende", $value);
     }
     
     function v_beginnValidate($value)
     {
-        return $this->requiredDateValidation("v_beginn", $value);
+        return $this->dateValidation("v_beginn", $value);
     }
     
     function v_endeValidate($value)
     {
-        return $this->requiredDateValidation("v_ende", $value);
+        return $this->dateValidation("v_ende", $value);
     }
     
     function cpd_kontoValidate($value)
@@ -190,30 +188,12 @@ class eventValidate
         return $this->defaultValidation("standardbetrag", $value, 16);
     }
     
-//    function first_dateValidate($value)
-//    {
-//        if(empty($value)){
-//            return true;
-//        }else{
-//            return $this->dateValidation("first_date", $value, true);
-//        }
-//    }
-//    
-//    function last_dateValidate($value)
-//    {
-//        if(empty($value)){
-//            return true;
-//        }else{
-//            return $this->dateValidation("last_date", $value, true);
-//        }
-//    }
-    
     function defaultValidation($key,$value,$length)
     {
         $bool = $this->requiredValidation($key, $value);
         
         if(strlen($value) > $length){
-            $this->addError($key, 2, array("errormsg" => "Die maximale Zeichenlaenge von ".$length." Zeichen ist einzuhalten."));
+            $this->addError($key, 2, array("maxlength" => $length, "actuallength" => strlen($value)));
             $bool = false;
         }
         
@@ -226,75 +206,39 @@ class eventValidate
     public function requiredValidation($key, $value)
     {
         if($value == ""){
-            $this->addError($key, 1, array("errormsg" => "Pflichtfeld ist auszufuellen."));
+            $this->addError($key, 1);
             return false;
         }
         return true;
     }
     
-    public function requiredDateValidation($key, $value)
+    function dateValidation($key, $value)
     {
         $bool = true;
-        $bool = $this->dateValidation($key, $value);
-        
-        if($bool == false){
-            return false;
-        }
-        return true;
-    }
-    
-    function dateValidation($key, $value, $opt_timecheck = false)
-    {
-        $bool = true;
-        if($opt_timecheck == true){
-            if(strlen($value) != 14){
-                $this->addError($key, 2, array("errormsg" => "Datums- + Zeiteingabe nicht korrekt."));
-                $bool = false;
+        if(strlen($value) != 8){
+            if($value == ""){
+                $this->addError($key, 1);
+            }else{
+                $this->addError($key, 2, array("maxlength" => 8, "actuallength" => strlen($value)));
             }
+            $bool = false;
         }else{
-            if(strlen($value) != 8){
-                $this->addError($key, 2, array("errormsg" => "Eingabe nicht korrekt. Es wurden ".  strlen($value) . " Zeichen eingegeben. Das Datumsfeld muss aus 8 Zeichen bestehen YYYYMMDD"));
-                $bool = false;
-            }
-        }
-        
-        if(strlen($value) >= 8){
-            $year = substr($value, 0, 4);
-            if($year < date("Y")){
-                $this->addError($key, 3, array("errormsg" => "Ungueltiges Jahr, es darf kein vergangenes Jahr eingegeben werden."));
-                $bool = false;
-            }
-        
-            $month = substr($value, 4, 2); 
-            $day   = substr($value, 6, 2);
-            if(!checkdate($month, $day, $year)){
-                $this->addError($key, 4, array("errormsg" => "Ungueltiges Datum."));
-                $bool = false;
-            }
-        }
-        
-        if(strlen($value) == 14){
-            if($opt_timecheck == true){
-                $hour     = substr($value, 8, 2);
-                $min      = substr($value, 10, 2);
-                $sec      = substr($value, 12, 2);
-
-                if($hour < 0 | $hour > 23){
-                    $this->addError($key, 5, array("errormsg" => "Stunde existiert nicht (nur 00-23 erlaubt)."));
+            if(strlen($value) >= 8){
+                $year = substr($value, 0, 4);
+                if($year < date("Y")){
+                    $this->addError($key, 3, array("enteredyear" => $year));
                     $bool = false;
                 }
 
-                if($min < 0 | $min > 59){
-                    $this->addError($key, 6, array("errormsg" => "Minute existiert nicht (nur 00-59 erlaubt)."));
-                    $bool = false;
-                }
-
-                if($sec < 0 | $sec > 59){
-                    $this->addError($key, 7, array("errormsg" => "Sekunde existiert nicht (nur 00-59 erlaubt)."));
+                $month = substr($value, 4, 2); 
+                $day   = substr($value, 6, 2);
+                if(!checkdate($month, $day, $year)){
+                    $this->addError($key, 4, array("entereddate" => $value));
                     $bool = false;
                 }
             }
         }
+        
         
         if($bool == false){
             return false;
@@ -307,7 +251,7 @@ class eventValidate
         $bool = true;
 
         if(filter_var($value, FILTER_VALIDATE_EMAIL) == false){
-            $this->addError($key, 2, array("errormsg" => "Es wurde keine korrekte EMail-Adresse eingegeben."));
+            $this->addError($key, 5);
             $bool = false;
         }
 

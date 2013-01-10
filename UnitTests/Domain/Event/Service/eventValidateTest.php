@@ -87,57 +87,57 @@ class eventValidateTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals(array(), $this->eventValidate->getErrors());
 
 
-        $array2 = array(
-            "id" => "aa11aa",
-            "buchungskreis" => "", 
-            "v_schluessel" => "12345678", 
-            "auftragsnr" => "45135060eqw1rf", 
-            "bezeichnung" => "Tagung 12345678900001234567890123456789012345678901234",
-            "v_land" => "de312", 
-            "v_ort" => "Jülich789012345678901234567890123456",
-            "anmeldefrist_beginn" => "1913070112312",
-            "anmeldefrist_ende" => "20131504",
-            "v_beginn" => "20130900",
-            "v_ende" => "", 
-            "cpd_konto" => "200270789012231",
-            "erloeskonto" => "4510123289372984729",
-            "steuerkennzeichen" => "98rhwrhwerhw", 
-            "steuersatz" => "9412414142fefewsefs", 
-            "ansprechpartner" => "Max Mustermann5678901234567890123",
-            "ansprechpartner_tel" => "012345asd",
-            "organisationseinheit" => "GB-F5678901234",
-            #php email validierungsfunktion:
-            #[max 64 zeichen]@[max 63 zeichen].[max 63 zeichen]
-            "ansprechpartner_mail" => "",
-            "stellvertreter_mail" => "",
-            "standardbetrag" => "1004567890123456789"
-        );
-
-        $this->eventValidate->setValues($array2);
-        $this->eventValidate->validate();
-        $error = $this->eventValidate->getErrors();
-        $this->assertTrue(is_array($error));
-
-        $this->assertEquals($error["id"][1]["error"],1);#idValidate fehler #1 [buchstaben gefunden]
-        
-        $this->assertEquals($error["buchungskreis"][1]["error"], 1); #defaultValidation fehler #1 [leer]
-        $this->assertFalse(array_key_exists(2, $error["buchungskreis"])); #defaultValidation fehler #2 [max zeichen ueberschritten] 
-        $this->assertTrue($this->eventValidate->v_schluesselValidate($array2["v_schluessel"])); #defaultValidation exakte max length
-        $this->assertEquals($error["auftragsnr"][2]["error"], 1); #defaultValidation fehler #2 [max zeichen ueberschritten]
-       
-        $this->assertEquals($error["ansprechpartner_mail"][1]["error"], 1); #emailValidation fehler #1 [leer]        
-        $this->assertFalse(array_key_exists("stellvertreter_mail", $error));
-
-        $this->assertEquals($error["v_ende"][2]["error"],1); #dateValidation fehler #1 [leer] 
-        $this->assertFalse(array_key_exists(1, $error["anmeldefrist_beginn"])); #dateValidation fehler #1 [leer] 
-        $this->assertEquals($error["anmeldefrist_beginn"][2]["error"],1); #dateValidation fehler #2 [zeichenlaenge passt nicht] 
-        $this->assertEquals($error["anmeldefrist_beginn"][3]["error"],1); #dateValidation fehler #3 [vergangenes jahr] 
-        $this->assertFalse(array_key_exists(4, $error["anmeldefrist_beginn"])); #dateValidation fehler #4 [falsches datum] 
-        $this->assertFalse(array_key_exists(5, $error["anmeldefrist_beginn"])); #dateValidation fehler #5 [stunde] 
-        $this->assertFalse(array_key_exists(6, $error["anmeldefrist_beginn"])); #dateValidation fehler #6 [minute] 
-        $this->assertFalse(array_key_exists(7, $error["anmeldefrist_beginn"])); #dateValidation fehler #7 [sekunde] 
-        $this->assertEquals($error["anmeldefrist_ende"][4]["error"],1); #dateValidation fehler #4 [falsches datum] 
-        $this->assertEquals($error["v_beginn"][4]["error"],1); #dateValidation fehler #4 [falsches datum] 
+//        $array2 = array(
+//            "id" => "aa11aa",
+//            "buchungskreis" => "", 
+//            "v_schluessel" => "12345678", 
+//            "auftragsnr" => "45135060eqw1rf", 
+//            "bezeichnung" => "Tagung 12345678900001234567890123456789012345678901234",
+//            "v_land" => "de312", 
+//            "v_ort" => "Jülich789012345678901234567890123456",
+//            "anmeldefrist_beginn" => "1913070112312",
+//            "anmeldefrist_ende" => "20131504",
+//            "v_beginn" => "20130900",
+//            "v_ende" => "", 
+//            "cpd_konto" => "200270789012231",
+//            "erloeskonto" => "4510123289372984729",
+//            "steuerkennzeichen" => "98rhwrhwerhw", 
+//            "steuersatz" => "9412414142fefewsefs", 
+//            "ansprechpartner" => "Max Mustermann5678901234567890123",
+//            "ansprechpartner_tel" => "012345asd",
+//            "organisationseinheit" => "GB-F5678901234",
+//            #php email validierungsfunktion:
+//            #[max 64 zeichen]@[max 63 zeichen].[max 63 zeichen]
+//            "ansprechpartner_mail" => "",
+//            "stellvertreter_mail" => "",
+//            "standardbetrag" => "1004567890123456789"
+//        );
+//
+//        $this->eventValidate->setValues($array2);
+//        $this->eventValidate->validate();
+//        $error = $this->eventValidate->getErrors();
+//        $this->assertTrue(is_array($error));
+//
+//        $this->assertEquals($error["id"][1]["error"],1);#idValidate fehler #1 [buchstaben gefunden]
+//        
+//        $this->assertEquals($error["buchungskreis"][1]["error"], 1); #defaultValidation fehler #1 [leer]
+//        $this->assertFalse(array_key_exists(2, $error["buchungskreis"])); #defaultValidation fehler #2 [max zeichen ueberschritten] 
+//        $this->assertTrue($this->eventValidate->v_schluesselValidate($array2["v_schluessel"])); #defaultValidation exakte max length
+//        $this->assertEquals($error["auftragsnr"][2]["error"], 1); #defaultValidation fehler #2 [max zeichen ueberschritten]
+//       
+//        $this->assertEquals($error["ansprechpartner_mail"][1]["error"], 1); #emailValidation fehler #1 [leer]        
+//        $this->assertFalse(array_key_exists("stellvertreter_mail", $error));
+//
+//        $this->assertEquals($error["v_ende"][2]["error"],1); #dateValidation fehler #1 [leer] 
+//        $this->assertFalse(array_key_exists(1, $error["anmeldefrist_beginn"])); #dateValidation fehler #1 [leer] 
+//        $this->assertEquals($error["anmeldefrist_beginn"][2]["error"],1); #dateValidation fehler #2 [zeichenlaenge passt nicht] 
+//        $this->assertEquals($error["anmeldefrist_beginn"][3]["error"],1); #dateValidation fehler #3 [vergangenes jahr] 
+//        $this->assertFalse(array_key_exists(4, $error["anmeldefrist_beginn"])); #dateValidation fehler #4 [falsches datum] 
+//        $this->assertFalse(array_key_exists(5, $error["anmeldefrist_beginn"])); #dateValidation fehler #5 [stunde] 
+//        $this->assertFalse(array_key_exists(6, $error["anmeldefrist_beginn"])); #dateValidation fehler #6 [minute] 
+//        $this->assertFalse(array_key_exists(7, $error["anmeldefrist_beginn"])); #dateValidation fehler #7 [sekunde] 
+//        $this->assertEquals($error["anmeldefrist_ende"][4]["error"],1); #dateValidation fehler #4 [falsches datum] 
+//        $this->assertEquals($error["v_beginn"][4]["error"],1); #dateValidation fehler #4 [falsches datum] 
     }
     
     public function testIdValidate()
@@ -149,7 +149,7 @@ class eventValidateTest extends \PHPUnit_Framework_TestCase {
         $this->assertFalse(array_key_exists("id", $this->eventValidate->getErrors()));
         
         $this->assertFalse($this->eventValidate->idValidate("a"));
-        $assertError = array(1 => array("error" => 1, "options" => array("errormsg" => "id darf nur aus Zahlen bestehen.")));
+        $assertError = array(6 => array("error" => 1,"options" => ""));
         $this->assertEquals($assertError, $this->eventValidate->getErrorsByKey("id"));
     }
     
@@ -162,11 +162,7 @@ class eventValidateTest extends \PHPUnit_Framework_TestCase {
         $this->error1RequiredTest("buchungskreis");
         
         $this->assertFalse($this->eventValidate->buchungskreisValidate("ab345"));
-        $this->error2LengthTest("buchungskreis", 4);
-
-        $this->assertFalse($this->eventValidate->buchungskreisValidate(""));
-        $this->assertFalse($this->eventValidate->buchungskreisValidate("ab345"));
-        $this->assertEquals($this->baseAssertErrorArray(4),$this->eventValidate->getErrorsByKey("buchungskreis"));
+        $this->error2LengthTest("buchungskreis", 4, "ab345");
     }
     
     public function testv_schluesselValidate()
@@ -178,11 +174,7 @@ class eventValidateTest extends \PHPUnit_Framework_TestCase {
         $this->error1RequiredTest("v_schluessel");
         
         $this->assertFalse($this->eventValidate->v_schluesselValidate("abcdefghj"));
-        $this->error2LengthTest("v_schluessel", 8);
-
-        $this->assertFalse($this->eventValidate->v_schluesselValidate(""));
-        $this->assertFalse($this->eventValidate->v_schluesselValidate("abcdefghj"));
-        $this->assertEquals($this->baseAssertErrorArray(8),$this->eventValidate->getErrorsByKey("v_schluessel"));
+        $this->error2LengthTest("v_schluessel", 8, "abcdefghj");
     }
     
     public function testauftragsnrValidate()
@@ -194,11 +186,7 @@ class eventValidateTest extends \PHPUnit_Framework_TestCase {
         $this->error1RequiredTest("auftragsnr");
         
         $this->assertFalse($this->eventValidate->auftragsnrValidate("0120124552414"));
-        $this->error2LengthTest("auftragsnr", 12);
-
-        $this->assertFalse($this->eventValidate->auftragsnrValidate(""));
-        $this->assertFalse($this->eventValidate->auftragsnrValidate("0120124552414"));
-        $this->assertEquals($this->baseAssertErrorArray(12),$this->eventValidate->getErrorsByKey("auftragsnr"));
+        $this->error2LengthTest("auftragsnr", 12,"0120124552414");
     }
     
     public function testbezeichnungValidate()
@@ -210,11 +198,7 @@ class eventValidateTest extends \PHPUnit_Framework_TestCase {
         $this->error1RequiredTest("bezeichnung");
         
         $this->assertFalse($this->eventValidate->bezeichnungValidate("Tagung 1 - ProjektmanagementTagung 1 - Projektmanagement"));
-        $this->error2LengthTest("bezeichnung", 50);
-
-        $this->assertFalse($this->eventValidate->bezeichnungValidate(""));
-        $this->assertFalse($this->eventValidate->bezeichnungValidate("Tagung 1 - ProjektmanagementTagung 1 - Projektmanagement"));
-        $this->assertEquals($this->baseAssertErrorArray(50),$this->eventValidate->getErrorsByKey("bezeichnung"));
+        $this->error2LengthTest("bezeichnung", 50, "Tagung 1 - ProjektmanagementTagung 1 - Projektmanagement");
     }
     
     public function testv_landValidate()
@@ -226,11 +210,7 @@ class eventValidateTest extends \PHPUnit_Framework_TestCase {
         $this->error1RequiredTest("v_ort");
         
         $this->assertFalse($this->eventValidate->v_ortValidate("Ehrenfeld-Wesseling-Urfeld-Ranzellll"));
-        $this->error2LengthTest("v_ort", 35);
-
-        $this->assertFalse($this->eventValidate->v_ortValidate(""));
-        $this->assertFalse($this->eventValidate->v_ortValidate("Ehrenfeld-Wesseling-Urfeld-Ranzellll"));
-        $this->assertEquals($this->baseAssertErrorArray(35),$this->eventValidate->getErrorsByKey("v_ort"));
+        $this->error2LengthTest("v_ort", 35, "Ehrenfeld-Wesseling-Urfeld-Ranzellll");
     }
     
     public function testv_ortValidate()
@@ -242,11 +222,7 @@ class eventValidateTest extends \PHPUnit_Framework_TestCase {
         $this->error1RequiredTest("v_land");
         
         $this->assertFalse($this->eventValidate->v_landValidate("deee"));
-        $this->error2LengthTest("v_land", 2);
-
-        $this->assertFalse($this->eventValidate->v_landValidate(""));
-        $this->assertFalse($this->eventValidate->v_landValidate("deee"));
-        $this->assertEquals($this->baseAssertErrorArray(2),$this->eventValidate->getErrorsByKey("v_land"));
+        $this->error2LengthTest("v_land", 2, "deee");
     }
 
     public function testanmeldefrist_beginnValidate()
@@ -255,16 +231,19 @@ class eventValidateTest extends \PHPUnit_Framework_TestCase {
         $this->assertFalse(array_key_exists("anmeldefrist_beginn", $this->eventValidate->getErrors()));
         
         $this->assertFalse($this->eventValidate->anmeldefrist_beginnValidate(""));
-        $this->dateError1RequiredTest("anmeldefrist_beginn");
+        $this->dateError1or2Test("anmeldefrist_beginn","");
+        
+        $this->assertFalse($this->eventValidate->anmeldefrist_beginnValidate("201201101"));
+        $this->dateError1or2Test("anmeldefrist_beginn","201201101");
         
         $this->assertFalse($this->eventValidate->anmeldefrist_beginnValidate("20120110"));
-        $this->dateError2YearTest("anmeldefrist_beginn");
+        $this->dateError2YearTest("anmeldefrist_beginn","20120110");
         
         $this->assertFalse($this->eventValidate->anmeldefrist_beginnValidate(date("Y")."1310"));
-        $this->dateError3DateTest("anmeldefrist_beginn");
+        $this->dateError3DateTest("anmeldefrist_beginn", date("Y")."1310");
         
         $this->assertFalse($this->eventValidate->anmeldefrist_beginnValidate(date("Y")."0230"));
-        $this->dateError3DateTest("anmeldefrist_beginn");
+        $this->dateError3DateTest("anmeldefrist_beginn", date("Y")."0230");
     }
     
     public function testanmeldefrist_endeValidate()
@@ -273,16 +252,19 @@ class eventValidateTest extends \PHPUnit_Framework_TestCase {
         $this->assertFalse(array_key_exists("anmeldefrist_ende", $this->eventValidate->getErrors()));
         
         $this->assertFalse($this->eventValidate->anmeldefrist_endeValidate(""));
-        $this->dateError1RequiredTest("anmeldefrist_ende");
+        $this->dateError1or2Test("anmeldefrist_ende", "");
+        
+        $this->assertFalse($this->eventValidate->anmeldefrist_endeValidate("201201101"));
+        $this->dateError1or2Test("anmeldefrist_ende", "201201101");
         
         $this->assertFalse($this->eventValidate->anmeldefrist_endeValidate("20120110"));
-        $this->dateError2YearTest("anmeldefrist_ende");
+        $this->dateError2YearTest("anmeldefrist_ende","20120110");
         
         $this->assertFalse($this->eventValidate->anmeldefrist_endeValidate(date("Y")."1310"));
-        $this->dateError3DateTest("anmeldefrist_ende");
+        $this->dateError3DateTest("anmeldefrist_ende",date("Y")."1310");
         
         $this->assertFalse($this->eventValidate->anmeldefrist_endeValidate(date("Y")."0230"));
-        $this->dateError3DateTest("anmeldefrist_ende");
+        $this->dateError3DateTest("anmeldefrist_ende",date("Y")."0230");
     }
     
     public function testv_beginnValidate()
@@ -291,16 +273,19 @@ class eventValidateTest extends \PHPUnit_Framework_TestCase {
         $this->assertFalse(array_key_exists("v_beginn", $this->eventValidate->getErrors()));
         
         $this->assertFalse($this->eventValidate->v_beginnValidate(""));
-        $this->dateError1RequiredTest("v_beginn");
+        $this->dateError1or2Test("v_beginn","");
+        
+        $this->assertFalse($this->eventValidate->v_beginnValidate("201201101"));
+        $this->dateError1or2Test("v_beginn","201201101");
         
         $this->assertFalse($this->eventValidate->v_beginnValidate("20120110"));
-        $this->dateError2YearTest("v_beginn");
+        $this->dateError2YearTest("v_beginn","20120110");
         
         $this->assertFalse($this->eventValidate->v_beginnValidate(date("Y")."1310"));
-        $this->dateError3DateTest("v_beginn");
+        $this->dateError3DateTest("v_beginn", date("Y")."1310");
         
         $this->assertFalse($this->eventValidate->v_beginnValidate(date("Y")."0230"));
-        $this->dateError3DateTest("v_beginn");
+        $this->dateError3DateTest("v_beginn", date("Y")."0230");
     }
     
     public function testv_endeValidate()
@@ -309,16 +294,19 @@ class eventValidateTest extends \PHPUnit_Framework_TestCase {
         $this->assertFalse(array_key_exists("v_ende", $this->eventValidate->getErrors()));
         
         $this->assertFalse($this->eventValidate->v_endeValidate(""));
-        $this->dateError1RequiredTest("v_ende");
+        $this->dateError1or2Test("v_ende" ,"");
+        
+        $this->assertFalse($this->eventValidate->v_endeValidate("201201101"));
+        $this->dateError1or2Test("v_ende" ,"201201101");
         
         $this->assertFalse($this->eventValidate->v_endeValidate("20120110"));
-        $this->dateError2YearTest("v_ende");
+        $this->dateError2YearTest("v_ende","20120110");
         
         $this->assertFalse($this->eventValidate->v_endeValidate(date("Y")."1310"));
-        $this->dateError3DateTest("v_ende");
+        $this->dateError3DateTest("v_ende",date("Y")."1310");
         
         $this->assertFalse($this->eventValidate->v_endeValidate(date("Y")."0230"));
-        $this->dateError3DateTest("v_ende");
+        $this->dateError3DateTest("v_ende", date("Y")."0230");
     }
     
     public function testcpd_kontoValidate()
@@ -330,11 +318,7 @@ class eventValidateTest extends \PHPUnit_Framework_TestCase {
         $this->error1RequiredTest("cpd_konto");
         
         $this->assertFalse($this->eventValidate->cpd_kontoValidate("200270200270"));
-        $this->error2LengthTest("cpd_konto", 10);
-
-        $this->assertFalse($this->eventValidate->cpd_kontoValidate(""));
-        $this->assertFalse($this->eventValidate->cpd_kontoValidate("200270200270"));
-        $this->assertEquals($this->baseAssertErrorArray(10),$this->eventValidate->getErrorsByKey("cpd_konto"));
+        $this->error2LengthTest("cpd_konto", 10, "200270200270");
     }
     
     public function testerloeskontoValidate()
@@ -346,11 +330,7 @@ class eventValidateTest extends \PHPUnit_Framework_TestCase {
         $this->error1RequiredTest("erloeskonto");
         
         $this->assertFalse($this->eventValidate->erloeskontoValidate("200270200270"));
-        $this->error2LengthTest("erloeskonto", 10);
-
-        $this->assertFalse($this->eventValidate->erloeskontoValidate(""));
-        $this->assertFalse($this->eventValidate->erloeskontoValidate("200270200270"));
-        $this->assertEquals($this->baseAssertErrorArray(10),$this->eventValidate->getErrorsByKey("erloeskonto"));
+        $this->error2LengthTest("erloeskonto", 10, "200270200270");
     }
     
     function teststeuerkennzeichenValidate()
@@ -362,11 +342,7 @@ class eventValidateTest extends \PHPUnit_Framework_TestCase {
         $this->error1RequiredTest("steuerkennzeichen");
         
         $this->assertFalse($this->eventValidate->steuerkennzeichenValidate("200"));
-        $this->error2LengthTest("steuerkennzeichen", 2);
-
-        $this->assertFalse($this->eventValidate->steuerkennzeichenValidate(""));
-        $this->assertFalse($this->eventValidate->steuerkennzeichenValidate("200"));
-        $this->assertEquals($this->baseAssertErrorArray(2),$this->eventValidate->getErrorsByKey("steuerkennzeichen"));
+        $this->error2LengthTest("steuerkennzeichen", 2, "200");
     }
     
     function teststeuersatzValidate()
@@ -378,11 +354,7 @@ class eventValidateTest extends \PHPUnit_Framework_TestCase {
         $this->error1RequiredTest("steuersatz");
         
         $this->assertFalse($this->eventValidate->steuersatzValidate("100111"));
-        $this->error2LengthTest("steuersatz", 5);
-
-        $this->assertFalse($this->eventValidate->steuersatzValidate(""));
-        $this->assertFalse($this->eventValidate->steuersatzValidate("100,11"));
-        $this->assertEquals($this->baseAssertErrorArray(5),$this->eventValidate->getErrorsByKey("steuersatz"));
+        $this->error2LengthTest("steuersatz", 5, "100111");
     }
     
     function testansprechpartnerValidate()
@@ -394,11 +366,7 @@ class eventValidateTest extends \PHPUnit_Framework_TestCase {
         $this->error1RequiredTest("ansprechpartner");
         
         $this->assertFalse($this->eventValidate->ansprechpartnerValidate("Maaaxiimiliaaan Muusstermaaaannnnn"));
-        $this->error2LengthTest("ansprechpartner", 30);
-
-        $this->assertFalse($this->eventValidate->ansprechpartnerValidate(""));
-        $this->assertFalse($this->eventValidate->ansprechpartnerValidate("Maaaxiimiliaaan Muusstermaaaannnnn"));
-        $this->assertEquals($this->baseAssertErrorArray(30),$this->eventValidate->getErrorsByKey("ansprechpartner"));
+        $this->error2LengthTest("ansprechpartner", 30, "Maaaxiimiliaaan Muusstermaaaannnnn");
     }
     
     function testansprechpartner_telValidate()
@@ -410,11 +378,7 @@ class eventValidateTest extends \PHPUnit_Framework_TestCase {
         $this->error1RequiredTest("ansprechpartner_tel");
         
         $this->assertFalse($this->eventValidate->ansprechpartner_telValidate("022112358431584168461"));
-        $this->error2LengthTest("ansprechpartner_tel", 20);
-
-        $this->assertFalse($this->eventValidate->ansprechpartner_telValidate(""));
-        $this->assertFalse($this->eventValidate->ansprechpartner_telValidate("022112358431584168461"));
-        $this->assertEquals($this->baseAssertErrorArray(20),$this->eventValidate->getErrorsByKey("ansprechpartner_tel"));       
+        $this->error2LengthTest("ansprechpartner_tel", 20, "022112358431584168461");      
     }
     
     function testorganisationseinheitValidate()
@@ -426,11 +390,7 @@ class eventValidateTest extends \PHPUnit_Framework_TestCase {
         $this->error1RequiredTest("organisationseinheit");
         
         $this->assertFalse($this->eventValidate->organisationseinheitValidate("ImaginaereOrga"));
-        $this->error2LengthTest("organisationseinheit", 12);
-
-        $this->assertFalse($this->eventValidate->organisationseinheitValidate(""));
-        $this->assertFalse($this->eventValidate->organisationseinheitValidate("ImaginaereOrga"));
-        $this->assertEquals($this->baseAssertErrorArray(12),$this->eventValidate->getErrorsByKey("organisationseinheit"));
+        $this->error2LengthTest("organisationseinheit", 12, "ImaginaereOrga");
     }
     
     function testansprechpartner_mailValidate()
@@ -439,12 +399,12 @@ class eventValidateTest extends \PHPUnit_Framework_TestCase {
         $this->assertFalse(array_key_exists("ansprechpartner_mail", $this->eventValidate->getErrors()));
         
         $this->assertFalse($this->eventValidate->ansprechpartner_mailValidate(""));
-        $assertError = array(1 => array("error" => 1, "options" => array("errormsg" => "Pflichtfeld ist auszufuellen.")));
+        $assertError = array(1 => array("error" => 1,"options" => ""));
         $this->assertEquals($assertError, $this->eventValidate->getErrorsByKey("ansprechpartner_mail"));
         $this->eventValidate->resetErrorKeyForTesting("ansprechpartner_mail");
         
         $this->assertFalse($this->eventValidate->ansprechpartner_mailValidate("hallo@hallo"));
-        $assertError = array(2 => array("error" => 1, "options" => array("errormsg" => "Es wurde keine korrekte EMail-Adresse eingegeben.")));
+        $assertError = array(5 => array("error" => 1,"options" => ""));
         $this->assertEquals($assertError, $this->eventValidate->getErrorsByKey("ansprechpartner_mail"));
     }
     
@@ -457,7 +417,7 @@ class eventValidateTest extends \PHPUnit_Framework_TestCase {
         $this->assertFalse(array_key_exists("stellvertreter_mail", $this->eventValidate->getErrors()));
         
         $this->assertFalse($this->eventValidate->stellvertreter_mailValidate("hallo@hallo"));
-        $assertError = array(2 => array("error" => 1, "options" => array("errormsg" => "Es wurde keine korrekte EMail-Adresse eingegeben.")));
+        $assertError = array(5 => array("error" => 1,"options" => ""));
         $this->assertEquals($assertError, $this->eventValidate->getErrorsByKey("stellvertreter_mail"));
     }
     
@@ -470,53 +430,46 @@ class eventValidateTest extends \PHPUnit_Framework_TestCase {
         $this->error1RequiredTest("standardbetrag");
         
         $this->assertFalse($this->eventValidate->standardbetragValidate("1234567890123,561"));
-        $this->error2LengthTest("standardbetrag", 16);
-
-        $this->assertFalse($this->eventValidate->standardbetragValidate(""));
-        $this->assertFalse($this->eventValidate->standardbetragValidate("1234567890123,561"));
-        $this->assertEquals($this->baseAssertErrorArray(16),$this->eventValidate->getErrorsByKey("standardbetrag"));
+        $this->error2LengthTest("standardbetrag", 16, "1234567890123,561");
     }
 
     public function error1RequiredTest($key)
     {        
-        $assertedError = array( 1 => array("error" => 1, "options" => array("errormsg" => "Pflichtfeld ist auszufuellen.")));
+        $assertedError = array( 1 => array("error" => 1 ,"options" => ""));
         $this->assertEquals($assertedError, $this->eventValidate->getErrorsByKey($key));
         $this->eventValidate->resetErrorKeyForTesting($key);
     }
     
-    public function error2LengthTest($key, $length)
+    public function error2LengthTest($key, $length, $value)
     {
-        $assertedError = array( 2 => array("error" => 1, "options" => array("errormsg" => "Die maximale Zeichenlaenge von ".$length." Zeichen ist einzuhalten.")));
+        $assertedError = array( 2 => array("error" => 1, "options" => array("maxlength" => $length, "actuallength" => strlen($value))));
         $this->assertEquals($assertedError, $this->eventValidate->getErrorsByKey($key));
         $this->eventValidate->resetErrorKeyForTesting($key);
     }
     
-    public function dateError1RequiredTest($key)
+    public function dateError1or2Test($key, $value)
     {
-        $assertedError = array(2 => array("error" => 1, "options" => array("errormsg" => "Eingabe nicht korrekt. Es wurden 0 Zeichen eingegeben. Das Datumsfeld muss aus 8 Zeichen bestehen YYYYMMDD")));
+        if($value == ""){
+            $assertedError = array(1 => array("error" => 1,"options" => ""));
+        }else{
+            $assertedError = array(2 => array("error" => 1, "options" => array("maxlength" => 8, "actuallength" => strlen($value))));
+        }
         $this->assertEquals($assertedError, $this->eventValidate->getErrorsByKey($key));
         $this->eventValidate->resetErrorKeyForTesting($key);
     }
     
-    public function dateError2YearTest($key)
+    public function dateError2YearTest($key, $value)
     {
-        $assertedError = array(3 => array("error" => 1, "options" => array("errormsg" => "Ungueltiges Jahr, es darf kein vergangenes Jahr eingegeben werden.")));
+        $assertedError = array(3 => array("error" => 1, "options" => array("enteredyear" => substr($value, 0, 4))));
         $this->assertEquals($assertedError, $this->eventValidate->getErrorsByKey($key));
         $this->eventValidate->resetErrorKeyForTesting($key);
     }
     
-    public function dateError3DateTest($key)
+    public function dateError3DateTest($key, $value)
     {
-        $assertedError = array(4 => array("error" => 1, "options" => array("errormsg" => "Ungueltiges Datum.")));
+        $assertedError = array(4 => array("error" => 1, "options" => array("entereddate" => $value)));
         $this->assertEquals($assertedError, $this->eventValidate->getErrorsByKey($key));
         $this->eventValidate->resetErrorKeyForTesting($key);
     }
 
-    public function baseAssertErrorArray($lenght)
-    {
-        return array(
-            1 => array("error" => 1, "options" => array("errormsg" => "Pflichtfeld ist auszufuellen.")),
-            2 => array("error" => 1, "options" => array("errormsg" => "Die maximale Zeichenlaenge von ".$lenght." Zeichen ist einzuhalten."))
-        );
-    }
 }
