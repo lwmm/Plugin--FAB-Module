@@ -27,9 +27,11 @@ class eventValidate
                 "organisationseinheit",
                 "ansprechpartner_mail",
                 "stellvertreter_mail",
-                "standardbetrag",
-                "first_date",
-                "last_date");
+                "standardbetrag");
+                #"first_date",
+                #"last_date");
+        
+            $this->errors = array();
     }
 
     public function setValues($array) 
@@ -188,23 +190,23 @@ class eventValidate
         return $this->defaultValidation("standardbetrag", $value, 16);
     }
     
-    function first_dateValidate($value)
-    {
-        if(empty($value)){
-            return true;
-        }else{
-            return $this->dateValidation("first_date", $value, true);
-        }
-    }
-    
-    function last_dateValidate($value)
-    {
-        if(empty($value)){
-            return true;
-        }else{
-            return $this->dateValidation("last_date", $value, true);
-        }
-    }
+//    function first_dateValidate($value)
+//    {
+//        if(empty($value)){
+//            return true;
+//        }else{
+//            return $this->dateValidation("first_date", $value, true);
+//        }
+//    }
+//    
+//    function last_dateValidate($value)
+//    {
+//        if(empty($value)){
+//            return true;
+//        }else{
+//            return $this->dateValidation("last_date", $value, true);
+//        }
+//    }
     
     function defaultValidation($key,$value,$length)
     {
@@ -233,7 +235,6 @@ class eventValidate
     public function requiredDateValidation($key, $value)
     {
         $bool = true;
-        $bool = $this->requiredValidation($key, $value);
         $bool = $this->dateValidation($key, $value);
         
         if($bool == false){
@@ -314,5 +315,10 @@ class eventValidate
             return false;
         }
         return true;
+    }
+    
+    public function resetErrorKeyForTesting($key)
+    {
+        $this->errors[$key] = array();
     }
 }

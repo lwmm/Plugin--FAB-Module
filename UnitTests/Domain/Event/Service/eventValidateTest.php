@@ -58,8 +58,6 @@ class eventValidateTest extends \PHPUnit_Framework_TestCase {
             "ansprechpartner_mail" => "m.mustermann@fz-juelich.de",
             "stellvertreter_mail" => "s.vertreter@fz-juelich.de",
             "standardbetrag" => "100",
-            "first_date" => "20130103124315",
-            "last_date" => "20130103125519"
         );
         
         $this->assertTrue($this->eventValidate->idValidate($array["id"]));
@@ -83,39 +81,36 @@ class eventValidateTest extends \PHPUnit_Framework_TestCase {
         $this->assertTrue($this->eventValidate->ansprechpartner_mailValidate($array["ansprechpartner_mail"]));
         $this->assertTrue($this->eventValidate->stellvertreter_mailValidate($array["stellvertreter_mail"]));
         $this->assertTrue($this->eventValidate->standardbetragValidate($array["standardbetrag"]));
-        $this->assertTrue($this->eventValidate->first_dateValidate($array["first_date"]));
-        $this->assertTrue($this->eventValidate->last_dateValidate($array["last_date"]));
 
         $this->eventValidate->setValues($array);
         $this->assertTrue($this->eventValidate->validate());
+        $this->assertEquals(array(), $this->eventValidate->getErrors());
 
 
         $array2 = array(
             "id" => "aa11aa",
-            "buchungskreis" => "", #leer
-            "v_schluessel" => "12345678", #genaue länge
-            "auftragsnr" => "45135060eqw1rf", #zu lang
-            "bezeichnung" => "Tagung 12345678900001234567890123456789012345678901234", #zu lang
-            "v_land" => "de312", #zu lang
-            "v_ort" => "Jülich789012345678901234567890123456", #zulang
-            "anmeldefrist_beginn" => "1913070112312", #jahr zu klein + zulang
-            "anmeldefrist_ende" => "20131504", #monat existiert nicht
-            "v_beginn" => "20130900", #tag existiert nicht
-            "v_ende" => "", #ein zeichen zu viel
-            "cpd_konto" => "200270789012231", #zulang
-            "erloeskonto" => "4510123289372984729", #zulang
-            "steuerkennzeichen" => "98rhwrhwerhw", #zu lang
-            "steuersatz" => "9412414142fefewsefs", #zu lang
-            "ansprechpartner" => "Max Mustermann5678901234567890123", #zulang
-            "ansprechpartner_tel" => "012345asd", #buchstaben in tel nr
-            "organisationseinheit" => "GB-F5678901234", #zu lang
+            "buchungskreis" => "", 
+            "v_schluessel" => "12345678", 
+            "auftragsnr" => "45135060eqw1rf", 
+            "bezeichnung" => "Tagung 12345678900001234567890123456789012345678901234",
+            "v_land" => "de312", 
+            "v_ort" => "Jülich789012345678901234567890123456",
+            "anmeldefrist_beginn" => "1913070112312",
+            "anmeldefrist_ende" => "20131504",
+            "v_beginn" => "20130900",
+            "v_ende" => "", 
+            "cpd_konto" => "200270789012231",
+            "erloeskonto" => "4510123289372984729",
+            "steuerkennzeichen" => "98rhwrhwerhw", 
+            "steuersatz" => "9412414142fefewsefs", 
+            "ansprechpartner" => "Max Mustermann5678901234567890123",
+            "ansprechpartner_tel" => "012345asd",
+            "organisationseinheit" => "GB-F5678901234",
             #php email validierungsfunktion:
             #[max 64 zeichen]@[max 63 zeichen].[max 63 zeichen]
-            "ansprechpartner_mail" => "", #keine geultige mail
+            "ansprechpartner_mail" => "",
             "stellvertreter_mail" => "",
-            "standardbetrag" => "1004567890123456789", #zu lang
-            "first_date" => "20130103004361", #sekunden auf 61 gesetzt
-            "last_date" => "", #skeunden wegfallen lassen
+            "standardbetrag" => "1004567890123456789"
         );
 
         $this->eventValidate->setValues($array2);
@@ -133,7 +128,7 @@ class eventValidateTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals($error["ansprechpartner_mail"][1]["error"], 1); #emailValidation fehler #1 [leer]        
         $this->assertFalse(array_key_exists("stellvertreter_mail", $error));
 
-        $this->assertEquals($error["v_ende"][1]["error"],1); #dateValidation fehler #1 [leer] 
+        $this->assertEquals($error["v_ende"][2]["error"],1); #dateValidation fehler #1 [leer] 
         $this->assertFalse(array_key_exists(1, $error["anmeldefrist_beginn"])); #dateValidation fehler #1 [leer] 
         $this->assertEquals($error["anmeldefrist_beginn"][2]["error"],1); #dateValidation fehler #2 [zeichenlaenge passt nicht] 
         $this->assertEquals($error["anmeldefrist_beginn"][3]["error"],1); #dateValidation fehler #3 [vergangenes jahr] 
@@ -143,10 +138,385 @@ class eventValidateTest extends \PHPUnit_Framework_TestCase {
         $this->assertFalse(array_key_exists(7, $error["anmeldefrist_beginn"])); #dateValidation fehler #7 [sekunde] 
         $this->assertEquals($error["anmeldefrist_ende"][4]["error"],1); #dateValidation fehler #4 [falsches datum] 
         $this->assertEquals($error["v_beginn"][4]["error"],1); #dateValidation fehler #4 [falsches datum] 
-        $this->assertEquals($error["first_date"][7]["error"],1); #dateValidation fehler #7 [sekunde]
-        $this->assertFalse(array_key_exists("last_date", $error)); 
+    }
+    
+    public function testIdValidate()
+    {
+        $this->assertTrue($this->eventValidate->idValidate(""));
+        $this->assertFalse(array_key_exists("id", $this->eventValidate->getErrors()));
+        
+        $this->assertTrue($this->eventValidate->idValidate("1"));
+        $this->assertFalse(array_key_exists("id", $this->eventValidate->getErrors()));
+        
+        $this->assertFalse($this->eventValidate->idValidate("a"));
+        $assertError = array(1 => array("error" => 1, "options" => array("errormsg" => "id darf nur aus Zahlen bestehen.")));
+        $this->assertEquals($assertError, $this->eventValidate->getErrorsByKey("id"));
+    }
+    
+    public function testBuchungskreisValidate()
+    {
+        $this->assertTrue($this->eventValidate->buchungskreisValidate("0100"));
+        $this->assertFalse(array_key_exists("buchungskreis", $this->eventValidate->getErrors()));
+        
+        $this->assertFalse($this->eventValidate->buchungskreisValidate(""));
+        $this->error1RequiredTest("buchungskreis");
+        
+        $this->assertFalse($this->eventValidate->buchungskreisValidate("ab345"));
+        $this->error2LengthTest("buchungskreis", 4);
+
+        $this->assertFalse($this->eventValidate->buchungskreisValidate(""));
+        $this->assertFalse($this->eventValidate->buchungskreisValidate("ab345"));
+        $this->assertEquals($this->baseAssertErrorArray(4),$this->eventValidate->getErrorsByKey("buchungskreis"));
+    }
+    
+    public function testv_schluesselValidate()
+    {
+        $this->assertTrue($this->eventValidate->v_schluesselValidate("65038462"));
+        $this->assertFalse(array_key_exists("v_schluessel", $this->eventValidate->getErrors()));
+        
+        $this->assertFalse($this->eventValidate->v_schluesselValidate(""));
+        $this->error1RequiredTest("v_schluessel");
+        
+        $this->assertFalse($this->eventValidate->v_schluesselValidate("abcdefghj"));
+        $this->error2LengthTest("v_schluessel", 8);
+
+        $this->assertFalse($this->eventValidate->v_schluesselValidate(""));
+        $this->assertFalse($this->eventValidate->v_schluesselValidate("abcdefghj"));
+        $this->assertEquals($this->baseAssertErrorArray(8),$this->eventValidate->getErrorsByKey("v_schluessel"));
+    }
+    
+    public function testauftragsnrValidate()
+    {
+        $this->assertTrue($this->eventValidate->auftragsnrValidate("000001234567"));
+        $this->assertFalse(array_key_exists("auftragsnr", $this->eventValidate->getErrors()));
+        
+        $this->assertFalse($this->eventValidate->auftragsnrValidate(""));
+        $this->error1RequiredTest("auftragsnr");
+        
+        $this->assertFalse($this->eventValidate->auftragsnrValidate("0120124552414"));
+        $this->error2LengthTest("auftragsnr", 12);
+
+        $this->assertFalse($this->eventValidate->auftragsnrValidate(""));
+        $this->assertFalse($this->eventValidate->auftragsnrValidate("0120124552414"));
+        $this->assertEquals($this->baseAssertErrorArray(12),$this->eventValidate->getErrorsByKey("auftragsnr"));
+    }
+    
+    public function testbezeichnungValidate()
+    {
+        $this->assertTrue($this->eventValidate->bezeichnungValidate("Tagung 1 - Projektmanagement Vorbereitung"));
+        $this->assertFalse(array_key_exists("bezeichnung", $this->eventValidate->getErrors()));
+        
+        $this->assertFalse($this->eventValidate->bezeichnungValidate(""));
+        $this->error1RequiredTest("bezeichnung");
+        
+        $this->assertFalse($this->eventValidate->bezeichnungValidate("Tagung 1 - ProjektmanagementTagung 1 - Projektmanagement"));
+        $this->error2LengthTest("bezeichnung", 50);
+
+        $this->assertFalse($this->eventValidate->bezeichnungValidate(""));
+        $this->assertFalse($this->eventValidate->bezeichnungValidate("Tagung 1 - ProjektmanagementTagung 1 - Projektmanagement"));
+        $this->assertEquals($this->baseAssertErrorArray(50),$this->eventValidate->getErrorsByKey("bezeichnung"));
+    }
+    
+    public function testv_landValidate()
+    {
+        $this->assertTrue($this->eventValidate->v_ortValidate("Immendorf"));
+        $this->assertFalse(array_key_exists("v_ort", $this->eventValidate->getErrors()));
+        
+        $this->assertFalse($this->eventValidate->v_ortValidate(""));
+        $this->error1RequiredTest("v_ort");
+        
+        $this->assertFalse($this->eventValidate->v_ortValidate("Ehrenfeld-Wesseling-Urfeld-Ranzellll"));
+        $this->error2LengthTest("v_ort", 35);
+
+        $this->assertFalse($this->eventValidate->v_ortValidate(""));
+        $this->assertFalse($this->eventValidate->v_ortValidate("Ehrenfeld-Wesseling-Urfeld-Ranzellll"));
+        $this->assertEquals($this->baseAssertErrorArray(35),$this->eventValidate->getErrorsByKey("v_ort"));
+    }
+    
+    public function testv_ortValidate()
+    {
+        $this->assertTrue($this->eventValidate->v_landValidate("de"));
+        $this->assertFalse(array_key_exists("v_land", $this->eventValidate->getErrors()));
+        
+        $this->assertFalse($this->eventValidate->v_landValidate(""));
+        $this->error1RequiredTest("v_land");
+        
+        $this->assertFalse($this->eventValidate->v_landValidate("deee"));
+        $this->error2LengthTest("v_land", 2);
+
+        $this->assertFalse($this->eventValidate->v_landValidate(""));
+        $this->assertFalse($this->eventValidate->v_landValidate("deee"));
+        $this->assertEquals($this->baseAssertErrorArray(2),$this->eventValidate->getErrorsByKey("v_land"));
     }
 
-}
+    public function testanmeldefrist_beginnValidate()
+    {
+        $this->assertTrue($this->eventValidate->anmeldefrist_beginnValidate(date("Y")."0110"));
+        $this->assertFalse(array_key_exists("anmeldefrist_beginn", $this->eventValidate->getErrors()));
+        
+        $this->assertFalse($this->eventValidate->anmeldefrist_beginnValidate(""));
+        $this->dateError1RequiredTest("anmeldefrist_beginn");
+        
+        $this->assertFalse($this->eventValidate->anmeldefrist_beginnValidate("20120110"));
+        $this->dateError2YearTest("anmeldefrist_beginn");
+        
+        $this->assertFalse($this->eventValidate->anmeldefrist_beginnValidate(date("Y")."1310"));
+        $this->dateError3DateTest("anmeldefrist_beginn");
+        
+        $this->assertFalse($this->eventValidate->anmeldefrist_beginnValidate(date("Y")."0230"));
+        $this->dateError3DateTest("anmeldefrist_beginn");
+    }
+    
+    public function testanmeldefrist_endeValidate()
+    {
+        $this->assertTrue($this->eventValidate->anmeldefrist_endeValidate(date("Y")."0110"));
+        $this->assertFalse(array_key_exists("anmeldefrist_ende", $this->eventValidate->getErrors()));
+        
+        $this->assertFalse($this->eventValidate->anmeldefrist_endeValidate(""));
+        $this->dateError1RequiredTest("anmeldefrist_ende");
+        
+        $this->assertFalse($this->eventValidate->anmeldefrist_endeValidate("20120110"));
+        $this->dateError2YearTest("anmeldefrist_ende");
+        
+        $this->assertFalse($this->eventValidate->anmeldefrist_endeValidate(date("Y")."1310"));
+        $this->dateError3DateTest("anmeldefrist_ende");
+        
+        $this->assertFalse($this->eventValidate->anmeldefrist_endeValidate(date("Y")."0230"));
+        $this->dateError3DateTest("anmeldefrist_ende");
+    }
+    
+    public function testv_beginnValidate()
+    {
+        $this->assertTrue($this->eventValidate->v_beginnValidate(date("Y")."0110"));
+        $this->assertFalse(array_key_exists("v_beginn", $this->eventValidate->getErrors()));
+        
+        $this->assertFalse($this->eventValidate->v_beginnValidate(""));
+        $this->dateError1RequiredTest("v_beginn");
+        
+        $this->assertFalse($this->eventValidate->v_beginnValidate("20120110"));
+        $this->dateError2YearTest("v_beginn");
+        
+        $this->assertFalse($this->eventValidate->v_beginnValidate(date("Y")."1310"));
+        $this->dateError3DateTest("v_beginn");
+        
+        $this->assertFalse($this->eventValidate->v_beginnValidate(date("Y")."0230"));
+        $this->dateError3DateTest("v_beginn");
+    }
+    
+    public function testv_endeValidate()
+    {
+        $this->assertTrue($this->eventValidate->v_endeValidate(date("Y")."0110"));
+        $this->assertFalse(array_key_exists("v_ende", $this->eventValidate->getErrors()));
+        
+        $this->assertFalse($this->eventValidate->v_endeValidate(""));
+        $this->dateError1RequiredTest("v_ende");
+        
+        $this->assertFalse($this->eventValidate->v_endeValidate("20120110"));
+        $this->dateError2YearTest("v_ende");
+        
+        $this->assertFalse($this->eventValidate->v_endeValidate(date("Y")."1310"));
+        $this->dateError3DateTest("v_ende");
+        
+        $this->assertFalse($this->eventValidate->v_endeValidate(date("Y")."0230"));
+        $this->dateError3DateTest("v_ende");
+    }
+    
+    public function testcpd_kontoValidate()
+    {
+        $this->assertTrue($this->eventValidate->cpd_kontoValidate("200270"));
+        $this->assertFalse(array_key_exists("cpd_konto", $this->eventValidate->getErrors()));
+        
+        $this->assertFalse($this->eventValidate->cpd_kontoValidate(""));
+        $this->error1RequiredTest("cpd_konto");
+        
+        $this->assertFalse($this->eventValidate->cpd_kontoValidate("200270200270"));
+        $this->error2LengthTest("cpd_konto", 10);
 
-?>
+        $this->assertFalse($this->eventValidate->cpd_kontoValidate(""));
+        $this->assertFalse($this->eventValidate->cpd_kontoValidate("200270200270"));
+        $this->assertEquals($this->baseAssertErrorArray(10),$this->eventValidate->getErrorsByKey("cpd_konto"));
+    }
+    
+    public function testerloeskontoValidate()
+    {
+        $this->assertTrue($this->eventValidate->erloeskontoValidate("4510"));
+        $this->assertFalse(array_key_exists("erloeskonto", $this->eventValidate->getErrors()));
+        
+        $this->assertFalse($this->eventValidate->erloeskontoValidate(""));
+        $this->error1RequiredTest("erloeskonto");
+        
+        $this->assertFalse($this->eventValidate->erloeskontoValidate("200270200270"));
+        $this->error2LengthTest("erloeskonto", 10);
+
+        $this->assertFalse($this->eventValidate->erloeskontoValidate(""));
+        $this->assertFalse($this->eventValidate->erloeskontoValidate("200270200270"));
+        $this->assertEquals($this->baseAssertErrorArray(10),$this->eventValidate->getErrorsByKey("erloeskonto"));
+    }
+    
+    function teststeuerkennzeichenValidate()
+    {
+        $this->assertTrue($this->eventValidate->steuerkennzeichenValidate("4a"));
+        $this->assertFalse(array_key_exists("steuerkennzeichen", $this->eventValidate->getErrors()));
+        
+        $this->assertFalse($this->eventValidate->steuerkennzeichenValidate(""));
+        $this->error1RequiredTest("steuerkennzeichen");
+        
+        $this->assertFalse($this->eventValidate->steuerkennzeichenValidate("200"));
+        $this->error2LengthTest("steuerkennzeichen", 2);
+
+        $this->assertFalse($this->eventValidate->steuerkennzeichenValidate(""));
+        $this->assertFalse($this->eventValidate->steuerkennzeichenValidate("200"));
+        $this->assertEquals($this->baseAssertErrorArray(2),$this->eventValidate->getErrorsByKey("steuerkennzeichen"));
+    }
+    
+    function teststeuersatzValidate()
+    {
+        $this->assertTrue($this->eventValidate->steuersatzValidate("9"));
+        $this->assertFalse(array_key_exists("steuersatz", $this->eventValidate->getErrors()));
+        
+        $this->assertFalse($this->eventValidate->steuersatzValidate(""));
+        $this->error1RequiredTest("steuersatz");
+        
+        $this->assertFalse($this->eventValidate->steuersatzValidate("100111"));
+        $this->error2LengthTest("steuersatz", 5);
+
+        $this->assertFalse($this->eventValidate->steuersatzValidate(""));
+        $this->assertFalse($this->eventValidate->steuersatzValidate("100,11"));
+        $this->assertEquals($this->baseAssertErrorArray(5),$this->eventValidate->getErrorsByKey("steuersatz"));
+    }
+    
+    function testansprechpartnerValidate()
+    {
+        $this->assertTrue($this->eventValidate->ansprechpartnerValidate("Max Mustermann"));
+        $this->assertFalse(array_key_exists("ansprechpartner", $this->eventValidate->getErrors()));
+        
+        $this->assertFalse($this->eventValidate->ansprechpartnerValidate(""));
+        $this->error1RequiredTest("ansprechpartner");
+        
+        $this->assertFalse($this->eventValidate->ansprechpartnerValidate("Maaaxiimiliaaan Muusstermaaaannnnn"));
+        $this->error2LengthTest("ansprechpartner", 30);
+
+        $this->assertFalse($this->eventValidate->ansprechpartnerValidate(""));
+        $this->assertFalse($this->eventValidate->ansprechpartnerValidate("Maaaxiimiliaaan Muusstermaaaannnnn"));
+        $this->assertEquals($this->baseAssertErrorArray(30),$this->eventValidate->getErrorsByKey("ansprechpartner"));
+    }
+    
+    function testansprechpartner_telValidate()
+    {
+        $this->assertTrue($this->eventValidate->ansprechpartner_telValidate("0221123584"));
+        $this->assertFalse(array_key_exists("ansprechpartner_tel", $this->eventValidate->getErrors()));
+        
+        $this->assertFalse($this->eventValidate->ansprechpartner_telValidate(""));
+        $this->error1RequiredTest("ansprechpartner_tel");
+        
+        $this->assertFalse($this->eventValidate->ansprechpartner_telValidate("022112358431584168461"));
+        $this->error2LengthTest("ansprechpartner_tel", 20);
+
+        $this->assertFalse($this->eventValidate->ansprechpartner_telValidate(""));
+        $this->assertFalse($this->eventValidate->ansprechpartner_telValidate("022112358431584168461"));
+        $this->assertEquals($this->baseAssertErrorArray(20),$this->eventValidate->getErrorsByKey("ansprechpartner_tel"));       
+    }
+    
+    function testorganisationseinheitValidate()
+    {
+        $this->assertTrue($this->eventValidate->organisationseinheitValidate("BMBF"));
+        $this->assertFalse(array_key_exists("organisationseinheit", $this->eventValidate->getErrors()));
+        
+        $this->assertFalse($this->eventValidate->organisationseinheitValidate(""));
+        $this->error1RequiredTest("organisationseinheit");
+        
+        $this->assertFalse($this->eventValidate->organisationseinheitValidate("ImaginaereOrga"));
+        $this->error2LengthTest("organisationseinheit", 12);
+
+        $this->assertFalse($this->eventValidate->organisationseinheitValidate(""));
+        $this->assertFalse($this->eventValidate->organisationseinheitValidate("ImaginaereOrga"));
+        $this->assertEquals($this->baseAssertErrorArray(12),$this->eventValidate->getErrorsByKey("organisationseinheit"));
+    }
+    
+    function testansprechpartner_mailValidate()
+    {
+        $this->assertTrue($this->eventValidate->ansprechpartner_mailValidate("m.mustermann@fzj-juelich.de"));
+        $this->assertFalse(array_key_exists("ansprechpartner_mail", $this->eventValidate->getErrors()));
+        
+        $this->assertFalse($this->eventValidate->ansprechpartner_mailValidate(""));
+        $assertError = array(1 => array("error" => 1, "options" => array("errormsg" => "Pflichtfeld ist auszufuellen.")));
+        $this->assertEquals($assertError, $this->eventValidate->getErrorsByKey("ansprechpartner_mail"));
+        $this->eventValidate->resetErrorKeyForTesting("ansprechpartner_mail");
+        
+        $this->assertFalse($this->eventValidate->ansprechpartner_mailValidate("hallo@hallo"));
+        $assertError = array(2 => array("error" => 1, "options" => array("errormsg" => "Es wurde keine korrekte EMail-Adresse eingegeben.")));
+        $this->assertEquals($assertError, $this->eventValidate->getErrorsByKey("ansprechpartner_mail"));
+    }
+    
+    function teststellvertreter_mailValidate()
+    {
+        $this->assertTrue($this->eventValidate->stellvertreter_mailValidate(""));
+        $this->assertFalse(array_key_exists("stellvertreter_mail", $this->eventValidate->getErrors()));
+        
+        $this->assertTrue($this->eventValidate->stellvertreter_mailValidate("s.stellvertreter@fzj-juelich.de"));
+        $this->assertFalse(array_key_exists("stellvertreter_mail", $this->eventValidate->getErrors()));
+        
+        $this->assertFalse($this->eventValidate->stellvertreter_mailValidate("hallo@hallo"));
+        $assertError = array(2 => array("error" => 1, "options" => array("errormsg" => "Es wurde keine korrekte EMail-Adresse eingegeben.")));
+        $this->assertEquals($assertError, $this->eventValidate->getErrorsByKey("stellvertreter_mail"));
+    }
+    
+    function teststandardbetragValidate()
+    {
+        $this->assertTrue($this->eventValidate->standardbetragValidate("100,43"));
+        $this->assertFalse(array_key_exists("standardbetrag", $this->eventValidate->getErrors()));
+        
+        $this->assertFalse($this->eventValidate->standardbetragValidate(""));
+        $this->error1RequiredTest("standardbetrag");
+        
+        $this->assertFalse($this->eventValidate->standardbetragValidate("1234567890123,561"));
+        $this->error2LengthTest("standardbetrag", 16);
+
+        $this->assertFalse($this->eventValidate->standardbetragValidate(""));
+        $this->assertFalse($this->eventValidate->standardbetragValidate("1234567890123,561"));
+        $this->assertEquals($this->baseAssertErrorArray(16),$this->eventValidate->getErrorsByKey("standardbetrag"));
+    }
+
+    public function error1RequiredTest($key)
+    {        
+        $assertedError = array( 1 => array("error" => 1, "options" => array("errormsg" => "Pflichtfeld ist auszufuellen.")));
+        $this->assertEquals($assertedError, $this->eventValidate->getErrorsByKey($key));
+        $this->eventValidate->resetErrorKeyForTesting($key);
+    }
+    
+    public function error2LengthTest($key, $length)
+    {
+        $assertedError = array( 2 => array("error" => 1, "options" => array("errormsg" => "Die maximale Zeichenlaenge von ".$length." Zeichen ist einzuhalten.")));
+        $this->assertEquals($assertedError, $this->eventValidate->getErrorsByKey($key));
+        $this->eventValidate->resetErrorKeyForTesting($key);
+    }
+    
+    public function dateError1RequiredTest($key)
+    {
+        $assertedError = array(2 => array("error" => 1, "options" => array("errormsg" => "Eingabe nicht korrekt. Es wurden 0 Zeichen eingegeben. Das Datumsfeld muss aus 8 Zeichen bestehen YYYYMMDD")));
+        $this->assertEquals($assertedError, $this->eventValidate->getErrorsByKey($key));
+        $this->eventValidate->resetErrorKeyForTesting($key);
+    }
+    
+    public function dateError2YearTest($key)
+    {
+        $assertedError = array(3 => array("error" => 1, "options" => array("errormsg" => "Ungueltiges Jahr, es darf kein vergangenes Jahr eingegeben werden.")));
+        $this->assertEquals($assertedError, $this->eventValidate->getErrorsByKey($key));
+        $this->eventValidate->resetErrorKeyForTesting($key);
+    }
+    
+    public function dateError3DateTest($key)
+    {
+        $assertedError = array(4 => array("error" => 1, "options" => array("errormsg" => "Ungueltiges Datum.")));
+        $this->assertEquals($assertedError, $this->eventValidate->getErrorsByKey($key));
+        $this->eventValidate->resetErrorKeyForTesting($key);
+    }
+
+    public function baseAssertErrorArray($lenght)
+    {
+        return array(
+            1 => array("error" => 1, "options" => array("errormsg" => "Pflichtfeld ist auszufuellen.")),
+            2 => array("error" => 1, "options" => array("errormsg" => "Die maximale Zeichenlaenge von ".$lenght." Zeichen ist einzuhalten."))
+        );
+    }
+}
