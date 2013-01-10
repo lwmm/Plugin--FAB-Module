@@ -27,9 +27,11 @@ class participantValidate
                 "refernznr",
                 "teilnehmer_intern",
                 "auftragsnr",
-                "betrag",
-                "first_date",
-                "last_date");
+                "betrag");
+                #"first_date",
+                #"last_date");
+        
+        $this->errors = array();
     }
 
     public function setValues($array) 
@@ -87,7 +89,7 @@ class participantValidate
             if(ctype_digit($value)){
                 return true;
             }else{
-                $this->addError("id", 1, array("errormsg" => "id darf nur aus Zahlen bestehen."));
+                $this->addError("event_id", 1, array("errormsg" => "id darf nur aus Zahlen bestehen."));
                 return false;
             }
         }
@@ -128,20 +130,25 @@ class participantValidate
         return $this->defaultValidation("unternehmen", $value, 35);
     }
     
-    public function straßeValidate($value)
+    public function strasseValidate($value)
     {
-        return $this->defaultValidation("straße", $value, 30);
+        return $this->defaultValidation("strasse", $value, 30);
     }
     
     public function plzValidate($value)
     {
-        $zipcheck = new \Fab\Services\Zipcheck\zipcheck();
-        if($this->landValidate($this->array["land"])){
-            $ok = $zipcheck->check(strtoupper($this->array["land"]), $value);
-            if($ok === 1){
-                return true;
-            }else{
-                return false;
+        if($value == ""){
+            return true;
+        }else{
+            $zipcheck = new \Fab\Services\Zipcheck\zipcheck();
+            if($this->landValidate($this->array["land"])){
+                $ok = $zipcheck->check(strtoupper($this->array["land"]), $value);
+                if($ok === 1){
+                    return true;
+                }else{
+                    $this->addError("plz", 1, array("errormsg" => "unguelte PLZ"));
+                    return false;
+                }
             }
         }
     }
@@ -194,11 +201,16 @@ class participantValidate
     public function referenznrValidate($value)
     {
         $bool = true;
-        if(int_val($value) < 400000){
-            $this->addError("referenznr", 3, array("errormsg" => "Die Referenznummer beginnt bei 400000"));
+        $bool = $this->defaultValidation("referenznr", $value, 8 , true);
+        if(ctype_digit($value)){
+            if($value < 400000){
+                $this->addError("referenznr", 3, array("errormsg" => "Die Referenznummer beginnt bei 400000"));
+                $bool = false;
+            }
+        }else{
+            $this->addError("referenznr", 4, array("errormsg" => "Die Referenznummer besteht nicht aus Zahlen"));
             $bool = false;
         }
-        $bool = $this->defaultValidation("referenznr", $value, 8 , true);
         
         if($bool == false){
             return false;
@@ -208,7 +220,12 @@ class participantValidate
     
     public function teilnehmer_internValidate($value)
     {
-        return $this->defaultValidation("teilnehmer_intern", $value, 1);
+        if(!in_array($value, array("0","1"))){
+            $this->addError("teilnehmer_intern", 1);
+            return false;
+        }else{
+            return true;
+        }
     }
     
     public function auftragsnrValidate($value)
@@ -341,7 +358,8 @@ class participantValidate
         return true;
     }
     
-    public function setDB($db){
-        $this->db = $db;
+    public function resetErrorKeyForTesting($key)
+    {
+        $this->errors[$key] = array();
     }
 }
