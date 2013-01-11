@@ -60,84 +60,62 @@ class eventValidateTest extends \PHPUnit_Framework_TestCase {
             "standardbetrag" => "100",
         );
         
-        $this->assertTrue($this->eventValidate->idValidate($array["id"]));
-        $this->assertTrue($this->eventValidate->buchungskreisValidate($array["buchungskreis"]));
-        $this->assertTrue($this->eventValidate->v_schluesselValidate($array["v_schluessel"]));
-        $this->assertTrue($this->eventValidate->auftragsnrValidate($array["auftragsnr"]));
-        $this->assertTrue($this->eventValidate->bezeichnungValidate($array["bezeichnung"]));
-        $this->assertTrue($this->eventValidate->v_landValidate($array["v_land"]));
-        $this->assertTrue($this->eventValidate->v_ortValidate($array["v_ort"]));
-        $this->assertTrue($this->eventValidate->anmeldefrist_beginnValidate($array["anmeldefrist_beginn"]));
-        $this->assertTrue($this->eventValidate->anmeldefrist_endeValidate($array["anmeldefrist_ende"]));
-        $this->assertTrue($this->eventValidate->v_beginnValidate($array["v_beginn"]));
-        $this->assertTrue($this->eventValidate->v_endeValidate($array["v_ende"]));
-        $this->assertTrue($this->eventValidate->cpd_kontoValidate($array["cpd_konto"]));
-        $this->assertTrue($this->eventValidate->erloeskontoValidate($array["erloeskonto"]));
-        $this->assertTrue($this->eventValidate->steuerkennzeichenValidate($array["steuerkennzeichen"]));
-        $this->assertTrue($this->eventValidate->steuersatzValidate($array["steuersatz"]));
-        $this->assertTrue($this->eventValidate->ansprechpartnerValidate($array["ansprechpartner"]));
-        $this->assertTrue($this->eventValidate->ansprechpartner_telValidate($array["ansprechpartner_tel"]));
-        $this->assertTrue($this->eventValidate->organisationseinheitValidate($array["organisationseinheit"]));
-        $this->assertTrue($this->eventValidate->ansprechpartner_mailValidate($array["ansprechpartner_mail"]));
-        $this->assertTrue($this->eventValidate->stellvertreter_mailValidate($array["stellvertreter_mail"]));
-        $this->assertTrue($this->eventValidate->standardbetragValidate($array["standardbetrag"]));
-
         $this->eventValidate->setValues($array);
         $this->assertTrue($this->eventValidate->validate());
         $this->assertEquals(array(), $this->eventValidate->getErrors());
 
 
-//        $array2 = array(
-//            "id" => "aa11aa",
-//            "buchungskreis" => "", 
-//            "v_schluessel" => "12345678", 
-//            "auftragsnr" => "45135060eqw1rf", 
-//            "bezeichnung" => "Tagung 12345678900001234567890123456789012345678901234",
-//            "v_land" => "de312", 
-//            "v_ort" => "Jülich789012345678901234567890123456",
-//            "anmeldefrist_beginn" => "1913070112312",
-//            "anmeldefrist_ende" => "20131504",
-//            "v_beginn" => "20130900",
-//            "v_ende" => "", 
-//            "cpd_konto" => "200270789012231",
-//            "erloeskonto" => "4510123289372984729",
-//            "steuerkennzeichen" => "98rhwrhwerhw", 
-//            "steuersatz" => "9412414142fefewsefs", 
-//            "ansprechpartner" => "Max Mustermann5678901234567890123",
-//            "ansprechpartner_tel" => "012345asd",
-//            "organisationseinheit" => "GB-F5678901234",
-//            #php email validierungsfunktion:
-//            #[max 64 zeichen]@[max 63 zeichen].[max 63 zeichen]
-//            "ansprechpartner_mail" => "",
-//            "stellvertreter_mail" => "",
-//            "standardbetrag" => "1004567890123456789"
-//        );
-//
-//        $this->eventValidate->setValues($array2);
-//        $this->eventValidate->validate();
-//        $error = $this->eventValidate->getErrors();
-//        $this->assertTrue(is_array($error));
-//
-//        $this->assertEquals($error["id"][1]["error"],1);#idValidate fehler #1 [buchstaben gefunden]
-//        
-//        $this->assertEquals($error["buchungskreis"][1]["error"], 1); #defaultValidation fehler #1 [leer]
-//        $this->assertFalse(array_key_exists(2, $error["buchungskreis"])); #defaultValidation fehler #2 [max zeichen ueberschritten] 
-//        $this->assertTrue($this->eventValidate->v_schluesselValidate($array2["v_schluessel"])); #defaultValidation exakte max length
-//        $this->assertEquals($error["auftragsnr"][2]["error"], 1); #defaultValidation fehler #2 [max zeichen ueberschritten]
-//       
-//        $this->assertEquals($error["ansprechpartner_mail"][1]["error"], 1); #emailValidation fehler #1 [leer]        
-//        $this->assertFalse(array_key_exists("stellvertreter_mail", $error));
-//
-//        $this->assertEquals($error["v_ende"][2]["error"],1); #dateValidation fehler #1 [leer] 
-//        $this->assertFalse(array_key_exists(1, $error["anmeldefrist_beginn"])); #dateValidation fehler #1 [leer] 
-//        $this->assertEquals($error["anmeldefrist_beginn"][2]["error"],1); #dateValidation fehler #2 [zeichenlaenge passt nicht] 
-//        $this->assertEquals($error["anmeldefrist_beginn"][3]["error"],1); #dateValidation fehler #3 [vergangenes jahr] 
-//        $this->assertFalse(array_key_exists(4, $error["anmeldefrist_beginn"])); #dateValidation fehler #4 [falsches datum] 
-//        $this->assertFalse(array_key_exists(5, $error["anmeldefrist_beginn"])); #dateValidation fehler #5 [stunde] 
-//        $this->assertFalse(array_key_exists(6, $error["anmeldefrist_beginn"])); #dateValidation fehler #6 [minute] 
-//        $this->assertFalse(array_key_exists(7, $error["anmeldefrist_beginn"])); #dateValidation fehler #7 [sekunde] 
-//        $this->assertEquals($error["anmeldefrist_ende"][4]["error"],1); #dateValidation fehler #4 [falsches datum] 
-//        $this->assertEquals($error["v_beginn"][4]["error"],1); #dateValidation fehler #4 [falsches datum] 
+        $array2 = array(
+            "id" => "",
+            "buchungskreis" => "", 
+            "v_schluessel" => "", 
+            "auftragsnr" => "", 
+            "bezeichnung" => "",
+            "v_land" => "", 
+            "v_ort" => "",
+            "anmeldefrist_beginn" => "",
+            "anmeldefrist_ende" => "",
+            "v_beginn" => "",
+            "v_ende" => "", 
+            "cpd_konto" => "",
+            "erloeskonto" => "",
+            "steuerkennzeichen" => "", 
+            "steuersatz" => "", 
+            "ansprechpartner" => "",
+            "ansprechpartner_tel" => "",
+            "organisationseinheit" => "",
+            #php email validierungsfunktion:
+            #[max 64 zeichen]@[max 63 zeichen].[max 63 zeichen]
+            "ansprechpartner_mail" => "",
+            "stellvertreter_mail" => "",
+            "standardbetrag" => ""
+        );
+
+        $this->eventValidate->setValues($array2);
+        $this->eventValidate->validate();
+        $error = $this->eventValidate->getErrors();
+        $this->assertTrue(is_array($error));
+
+        $this->assertFalse(array_key_exists("id", $error));
+        $this->assertEquals($error["buchungskreis"], array(1 => array("error" => 1, "options" => "")));
+        $this->assertEquals($error["v_schluessel"], array(1 => array("error" => 1, "options" => "")));
+        $this->assertEquals($error["auftragsnr"], array(1 => array("error" => 1, "options" => "")));
+        $this->assertEquals($error["bezeichnung"], array(1 => array("error" => 1, "options" => "")));
+        $this->assertEquals($error["v_land"], array(1 => array("error" => 1, "options" => "")));
+        $this->assertEquals($error["v_ort"], array(1 => array("error" => 1, "options" => "")));
+        $this->assertEquals($error["anmeldefrist_beginn"], array(1 => array("error" => 1, "options" => "")));
+        $this->assertEquals($error["anmeldefrist_ende"], array(1 => array("error" => 1, "options" => "")));
+        $this->assertEquals($error["v_beginn"], array(1 => array("error" => 1, "options" => "")));
+        $this->assertEquals($error["v_ende"], array(1 => array("error" => 1, "options" => "")));
+        $this->assertEquals($error["cpd_konto"], array(1 => array("error" => 1, "options" => "")));
+        $this->assertEquals($error["erloeskonto"], array(1 => array("error" => 1, "options" => "")));
+        $this->assertEquals($error["steuersatz"], array(1 => array("error" => 1, "options" => "")));
+        $this->assertEquals($error["ansprechpartner"], array(1 => array("error" => 1, "options" => "")));
+        $this->assertEquals($error["ansprechpartner_tel"], array(1 => array("error" => 1, "options" => "")));
+        $this->assertEquals($error["organisationseinheit"], array(1 => array("error" => 1, "options" => "")));
+        $this->assertEquals($error["ansprechpartner_mail"], array(1 => array("error" => 1, "options" => "")));
+        $this->assertFalse(array_key_exists("stellvertreter_mail", $error));
+        $this->assertEquals($error["standardbetrag"], array(1 => array("error" => 1, "options" => "")));
     }
     
     public function testIdValidate()

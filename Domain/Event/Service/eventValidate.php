@@ -2,6 +2,16 @@
 
 namespace Fab\Domain\Event\Service;
 
+define("REQUIRED", "1");    # array( 1 => array( "error" => 1, "options" => "" ));
+define("MAXLENGTH", "2");   # array( 2 => array( "error" => 1, "options" => array( "maxlength" => $maxlength, "actuallength" => $strlen ) ));
+define("YEAR", "3");        # array( 3 => array( "error" => 1, "options" => array( "enteredyear" => $year ) ));
+define("DATE", "4");        # array( 4 => array( "error" => 1, "options" => array( "entereddate" => $date ) ));  [$date = JJJJMMDD]
+define("EMAIL", "5");       # array( 5 => array( "error" => 1, "options" => "" ));
+define("DIGITFIELD", "6");  # array( 6 => array( "error" => 1, "options" => "" ));
+define("ZIP", "7");         # array( 7 => array( "error" => 1, "options" => "" ));
+define("PAYMENT", "8");     # array( 8 => array( "error" => 1, "options" => "" ));
+define("BOOL", "9");        # array( 9 => array( "error" => 1, "options" => "" ));
+
 class eventValidate
 {
     public function __construct()
