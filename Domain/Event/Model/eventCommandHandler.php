@@ -91,7 +91,7 @@ class eventCommandHandler extends fabCommandHandler
      */
     public function deleteEvent(Entity $entity)
     {
-        $this->baseDelete($entity, "fab_tagungen");
+        return $this->baseDelete($entity, "fab_tagungen");
     }
 
     public function saveReplacement($id, $stellvertreter_mail)
@@ -109,7 +109,8 @@ class eventCommandHandler extends fabCommandHandler
      */
     public function createTable()
     {
-        $table_create_statement = "id int(11) NOT NULL AUTO_INCREMENT,
+        $table_create_statement = "CREATE TABLE IF NOT EXISTS ".$this->db->gt("fab_tagungen")." (
+                                  id int(11) NOT NULL AUTO_INCREMENT,
                                   buchungskreis varchar(4) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
                                   v_schluessel varchar(8) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
                                   auftragsnr varchar(12) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
@@ -130,10 +131,11 @@ class eventCommandHandler extends fabCommandHandler
                                   ansprechpartner_mail varchar(241) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
                                   stellvertreter_mail varchar(241) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
                                   standardbetrag varchar(16) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
-                                  first_date int(14) NOT NULL,
-                                  last_date int(14) NOT NULL,
+                                  first_date bigint(14) NOT NULL,
+                                  last_date bigint(14) NOT NULL,
                                   PRIMARY KEY (id),
-                                  UNIQUE KEY v_schluessel (v_schluessel) ";
+                                  UNIQUE KEY v_schluessel (v_schluessel)
+                                ) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ; ";
         
         return $this->baseCreateTable("fab_tagungen", $table_create_statement);
         $this->updateTable();

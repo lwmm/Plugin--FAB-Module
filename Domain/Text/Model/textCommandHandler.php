@@ -74,14 +74,16 @@ class textCommandHandler extends fabCommandHandler
      */
     public function createTable()
     {
-        $table_create_statement = "id int(11) NOT NULL AUTO_INCREMENT,
+        $table_create_statement = "CREATE TABLE IF NOT EXISTS ".$this->db->gt("fab_text")." (
+                                  id int(11) NOT NULL AUTO_INCREMENT,
                                   key varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
                                   content longtext CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
                                   language varchar(2) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
                                   category varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
                                   first_date int(14) NOT NULL,
                                   last_date int(14) NOT NULL,
-                                  PRIMARY KEY (`id`) ";
+                                  PRIMARY KEY (id)
+                                ) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ; ";
         
         return $this->baseCreateTable("fab_text", $table_create_statement);
         $this->updateTable();

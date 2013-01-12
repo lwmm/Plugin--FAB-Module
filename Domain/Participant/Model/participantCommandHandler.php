@@ -99,7 +99,8 @@ class participantCommandHandler extends fabCommandHandler
      */
     public function createTable()
     {
-        $table_create_statement = "id int(11) NOT NULL AUTO_INCREMENT,
+        $table_create_statement = "CREATE TABLE IF NOT EXISTS ".$this->db->gt("fab_teilnehmer")." (
+                                  id int(11) NOT NULL AUTO_INCREMENT,
                                   event_id int(11) NOT NULL,
                                   anrede varchar(15) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
                                   sprache varchar(2) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
@@ -120,9 +121,10 @@ class participantCommandHandler extends fabCommandHandler
                                   teilnehmer_intern int(1) NOT NULL,
                                   auftragsnr varchar(12) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
                                   betrag varchar(16) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
-                                  first_date int(14) NOT NULL,
-                                  last_date int(14) NOT NULL,
-                                  PRIMARY KEY (id) ";
+                                  first_date bigint(14) NOT NULL,
+                                  last_date bigint(14) NOT NULL,
+                                  PRIMARY KEY (id)
+                                ) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ; ";
         
         return $this->baseCreateTable("fab_teilnehmer", $table_create_statement);
         $this->updateTable();    
