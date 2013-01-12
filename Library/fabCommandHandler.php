@@ -49,7 +49,7 @@ class fabCommandHandler
     public function baseCreateTable($table_name, $table_create_statement)
     {
         if(!$this->db->tableExists($this->db->gt($table_name))){
-            $this->db->setStatement("CREATE TABLE IF NOT EXISTS ".$this->db->gt($table_name)." ( ". $table_create_statement ." ); ");
+            $this->db->setStatement($table_create_statement);
             return $this->basePdbquery();
         }
         return true;
