@@ -21,27 +21,27 @@ class tableInstaller
         
         $ok = $countryCommandHandler->createTable();
         if(!$ok){
-            throw new Exception('...');
+            throw new Exception('CREATE TABLE country');
         }
         
         $ok = $countryCommandHandler->importCountries();
         if(!$ok){
-            throw new Exception('...');
+            throw new Exception('IMPORT COUNTRIES');
         }
         
         $ok = $eventCommandHandler->createTable();
         if(!$ok){
-            throw new Exception('...');
+            throw new Exception('CREATE TABLE event');
         }
         
         $ok = $participantCommandHandler->createTable();
         if(!$ok){
-            throw new Exception('...');
+            throw new Exception('CREATE TABLE participant');
         }
         
         $ok = $textCommandHandler->createTable();
         if(!$ok){
-            throw new Exception('...');
+            throw new Exception('CREATE TABLE text');
         }
         
         return true;
