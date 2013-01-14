@@ -22,7 +22,7 @@ class participantCommandHandler extends fabCommandHandler
      */
     public function addParticipant($event_id, ValueObject $entity)
     {
-        $this->db->setStatement("INSERT INTO t:fab_teilnehmer ( event_id, anrede, sprache, titel, nachname, vorname, institut, unternehmen, strasse, plz, ort, land, mail, veranstaltung, ust_id_nr, zahlweise, referenznr, teilnehmer_intern, auftragsnr, betrag, first_date, last_date ) VALUES ( :event_id, :anrede, :sprache, :titel, :nachname, :vorname, :institut, :unternehmen, :strasse, :plz, :ort, :land, :mail, :veranstaltung, :ust_id_nr, :zahlweise, :referenznr, :teilnehmer_intern, :auftragsnr, :betrag, :first_date, :last_date ) ");
+        $this->db->setStatement("INSERT INTO t:fab_teilnehmer ( event_id, anrede, sprache, titel, nachname, vorname, institut, unternehmen, strasse, plz, ort, land, mail, ust_id_nr, zahlweise, teilnehmer_intern, betrag, first_date, last_date ) VALUES ( :event_id, :anrede, :sprache, :titel, :nachname, :vorname, :institut, :unternehmen, :strasse, :plz, :ort, :land, :mail, :ust_id_nr, :zahlweise, :teilnehmer_intern, :betrag, :first_date, :last_date ) ");
         $this->db->bindParameter("event_id", "i", $event_id);
         $this->db->bindParameter("anrede", "s", $entity->getValueByKey('anrede'));
         $this->db->bindParameter("sprache", "s", $entity->getValueByKey('sprache'));
@@ -36,12 +36,9 @@ class participantCommandHandler extends fabCommandHandler
         $this->db->bindParameter("ort", "s", $entity->getValueByKey('ort'));
         $this->db->bindParameter("land", "s", $entity->getValueByKey('land'));
         $this->db->bindParameter("mail", "s", $entity->getValueByKey('mail'));
-        $this->db->bindParameter("veranstaltung", "s", $entity->getValueByKey('veranstaltung'));
         $this->db->bindParameter("ust_id_nr", "s", $entity->getValueByKey('ust_id_nr'));
         $this->db->bindParameter("zahlweise", "s", $entity->getValueByKey('zahlweise'));
-        $this->db->bindParameter("referenznr", "s", $entity->getValueByKey('referenznr'));
         $this->db->bindParameter("teilnehmer_intern", "i", $entity->getValueByKey('teilnehmer_intern'));
-        $this->db->bindParameter("auftragsnr", "s", $entity->getValueByKey('auftragsnr'));
         $this->db->bindParameter("betrag", "s", $entity->getValueByKey('betrag'));
         $this->db->bindParameter("first_date", "i", date("YmdHis"));
         $this->db->bindParameter("last_date", "i", date("YmdHis"));
@@ -57,7 +54,7 @@ class participantCommandHandler extends fabCommandHandler
      */
     public function saveParticipant($id, ValueObject $entity)
     {
-        $this->db->setStatement("UPDATE t:fab_teilnehmer SET anrede = :anrede, sprache = :sprache, titel = :titel, nachname = :nachname, vorname = :vorname, institut = :institut, unternehmen = :unternehmen, strasse = :strasse, plz = :plz, ort = :ort, land = :land, mail = :mail, veranstaltung = :veranstaltung, ust_id_nr = :ust_id_nr, zahlweise = :zahlweise, referenznr = :referenznr, teilnehmer_intern = :teilnehmer_intern, auftragsnr = :auftragsnr, betrag = :betrag, last_date = :last_date WHERE id = :id ");
+        $this->db->setStatement("UPDATE t:fab_teilnehmer SET anrede = :anrede, sprache = :sprache, titel = :titel, nachname = :nachname, vorname = :vorname, institut = :institut, unternehmen = :unternehmen, strasse = :strasse, plz = :plz, ort = :ort, land = :land, mail = :mail, ust_id_nr = :ust_id_nr, zahlweise = :zahlweise, teilnehmer_intern = :teilnehmer_intern, betrag = :betrag, last_date = :last_date WHERE id = :id ");
         $this->db->bindParameter("id", "i", $id);
         $this->db->bindParameter("anrede", "s", $entity->getValueByKey('anrede'));
         $this->db->bindParameter("sprache", "s", $entity->getValueByKey('sprache'));
@@ -71,16 +68,13 @@ class participantCommandHandler extends fabCommandHandler
         $this->db->bindParameter("ort", "s", $entity->getValueByKey('ort'));
         $this->db->bindParameter("land", "s", $entity->getValueByKey('land'));
         $this->db->bindParameter("mail", "s", $entity->getValueByKey('mail'));
-        $this->db->bindParameter("veranstaltung", "s", $entity->getValueByKey('veranstaltung'));
         $this->db->bindParameter("ust_id_nr", "s", $entity->getValueByKey('ust_id_nr'));
         $this->db->bindParameter("zahlweise", "s", $entity->getValueByKey('zahlweise'));
-        $this->db->bindParameter("referenznr", "s", $entity->getValueByKey('referenznr'));
         $this->db->bindParameter("teilnehmer_intern", "i", $entity->getValueByKey('teilnehmer_intern'));
-        $this->db->bindParameter("auftragsnr", "s", $entity->getValueByKey('auftragsnr'));
         $this->db->bindParameter("betrag", "s", $entity->getValueByKey('betrag'));
         $this->db->bindParameter("last_date", "i", date("YmdHis"));
 
-        return $this->basePdbqueryWithEntityReturn($entity);
+        return $this->basePdbquery();
     }
     
     /**
@@ -114,20 +108,21 @@ class participantCommandHandler extends fabCommandHandler
                                   ort varchar(35) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
                                   land varchar(2) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
                                   mail varchar(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
-                                  veranstaltung varchar(8) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
                                   ust_id_nr varchar(20) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
                                   zahlweise varchar(1) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
-                                  referenznr varchar(8) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
                                   teilnehmer_intern int(1) NOT NULL,
-                                  auftragsnr varchar(12) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
                                   betrag varchar(16) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
                                   first_date bigint(14) NOT NULL,
                                   last_date bigint(14) NOT NULL,
                                   PRIMARY KEY (id)
                                 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ; ";
         
-        return $this->baseCreateTable("fab_teilnehmer", $table_create_statement);
-        $this->updateTable();    
+        $ok = $this->baseCreateTable("fab_teilnehmer", $table_create_statement);
+        if($ok){
+            return $this->updateTable();    
+        }else{
+            return false;
+        }
     }
     
     /**

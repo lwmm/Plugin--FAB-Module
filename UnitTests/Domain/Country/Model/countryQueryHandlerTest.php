@@ -31,6 +31,7 @@ class countryQueryHandlerTest extends \PHPUnit_Framework_TestCase {
         $autoloader->setConfig(array("plugins" => "C:/xampp/htdocs/c38/contentory/c_server/plugins/",
                                      "plugin_path" => array ("lw" => "C:/xampp/htdocs/c38/contentory/c_server/modules/lw/")));
         $this->countryQueryHandler = new Fab\Domain\Country\Model\countryQueryHandler($this->db);     
+        $this->countryCommandHandler = new Fab\Domain\Country\Model\countryCommandHandler($this->db);     
     }
 
     /**
@@ -46,16 +47,41 @@ class countryQueryHandlerTest extends \PHPUnit_Framework_TestCase {
     /**
      * @todo Implement test().
      */
-    public function test()
+    public function testGetAllCountries()
     {
+        $this->createTable();
+        
+        $this->assertTrue($this->countryCommandHandler->importCountries());
+        
+        $data = array();
+        $file = fopen( dirname(__FILE__)."/../../../../Domain/Country/Model/data/countries.csv", 'r');
+        while (($line = fgetcsv($file,100,";")) !== FALSE) {
+            array_push($data, $line);
+        }
+        fclose($file);
 
+        $assertedArray = array();
+        foreach ($data as $value) {
+            array_push($assertedArray,array("land" => $value[0], "bezeichnung" => $value[1]));
+        }
+        
+        foreach ($assertedArray as $key => $value) {
+            $land[$key] = strtolower($value["land"]);
+        }
+        array_multisort($land, SORT_ASC, $assertedArray);
+        
+        $this->assertEquals($assertedArray, $this->countryQueryHandler->getAllCountries());
     }
     
-    public function getInstace($array)
+    public function testDropTable()
     {
-        return new \LWddd\ValueObject($array);
+        $this->db->setStatement("DROP TABLE t:fab_laender ");
+        $this->db->pdbquery();
+    }    
+    
+    public function createTable()
+    {
+        $this->assertTrue($this->countryCommandHandler->createTable());
+        $this->assertTrue($this->db->tableExists($this->db->gt("fab_laender")));
     }
-
 }
-
-?>

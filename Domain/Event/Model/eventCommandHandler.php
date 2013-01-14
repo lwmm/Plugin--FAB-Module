@@ -137,8 +137,12 @@ class eventCommandHandler extends fabCommandHandler
                                   UNIQUE KEY v_schluessel (v_schluessel)
                                 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ; ";
         
-        return $this->baseCreateTable("fab_tagungen", $table_create_statement);
-        $this->updateTable();
+        $ok = $this->baseCreateTable("fab_tagungen", $table_create_statement);
+        if($ok){
+            return $this->updateTable();
+        }else{
+            return false;
+        }
     }
     
     /**

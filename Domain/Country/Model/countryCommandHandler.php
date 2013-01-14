@@ -33,10 +33,11 @@ class countryCommandHandler extends fabCommandHandler
         foreach ($data as $value){
             $values .= "('".$value[0]."', '".$value[1]."'),";
         }
-        $values = substr($values, 0, strlen($values) - 2);
+        $values = substr($values, 0, strlen($values) - 1);
         
-        $this->db->setStatement("INSERT INTO t:fab_leander ( land , bezeichnung ) VALUES ".$values." ");   
-        return $this->basePdbinsert("fab_leander");
+        $this->db->setStatement("INSERT INTO t:fab_laender ( land , bezeichnung ) VALUES ".$values." "); 
+        #die($this->db->prepare());
+        return $this->db->pdbquery();
     }
     
     /**
@@ -48,10 +49,14 @@ class countryCommandHandler extends fabCommandHandler
         $table_create_statement = "CREATE TABLE IF NOT EXISTS ".$this->db->gt("fab_laender")." (
                                   land varchar(2) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
                                   bezeichnung varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL
-                                    ) ENGINE=InnoDB DEFAULT CHARSET=latin1; ";
+                                    ) ENGINE=InnoDB DEFAULT CHARSET=latin1 ";
         
-        return $this->baseCreateTable("fab_leander", $table_create_statement);
-        $this->updateTable();
+        $ok = $this->baseCreateTable("fab_laender", $table_create_statement);
+        if($ok){
+            return $this->updateTable();
+        }else{
+            return false;
+        }
     }
     
     /**

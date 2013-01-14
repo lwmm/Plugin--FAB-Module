@@ -240,10 +240,11 @@ class eventCommandHandlerTest extends \PHPUnit_Framework_TestCase {
             
             $this->db->setStatement("SELECT * FROM t:fab_tagungen WHERE id = 1 ");
             $entry = $this->db->pselect1();
+            unset($entry["id"]);
+            unset($entry["first_date"]);
+            unset($entry["last_date"]);
             
-            $this->assertEquals(16, intval($entry["buchungskreis"]));
-            $this->assertEquals("Tagung 2", $entry["bezeichnung"]);
-            $this->assertFalse("Tagung 1" == $entry["bezeichnung"]);
+            $this->assertEquals($array,$entry);
     }
     
     public function testSaveReplacement()

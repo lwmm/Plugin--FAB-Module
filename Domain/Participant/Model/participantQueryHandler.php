@@ -17,7 +17,12 @@ class participantQueryHandler extends fabQueryHandler
      */
     public function loadParticipantsByEvent($event_id)
     {
-        $this->baseLoadEntriesByAttributeWithOrder("fab_teilnehmer", "event_id", "i", $event_id, "nachname", "ASC");
+        if (intval($event_id)>0) {
+            return $this->baseLoadEntriesByAttributeWithOrder("fab_teilnehmer", "event_id", "i", $event_id, "nachname", "ASC");
+        }
+        else {
+            throw new \Exception("no valid EventId available!");
+        }
     }
 
     /**
@@ -27,6 +32,6 @@ class participantQueryHandler extends fabQueryHandler
      */
     public function loadParticipantById($id)
     {
-        $this->baseGetEntryById($id, "fab_teilnehmer");
+        return $this->baseGetEntryById($id, "fab_teilnehmer");
     }
 }

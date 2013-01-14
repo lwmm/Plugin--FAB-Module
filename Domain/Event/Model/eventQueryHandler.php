@@ -28,7 +28,7 @@ class eventQueryHandler extends fabQueryHandler
      */
     public function getEventById($id)
     {
-        $this->baseGetEntryById($id, "fab_tagungen");
+        return $this->baseGetEntryById($id, "fab_tagungen");
     }
     
     /**
@@ -38,6 +38,6 @@ class eventQueryHandler extends fabQueryHandler
      */
     public function loadEventsByResponsible($ansprechpartner_mail)
     {
-        $this->baseLoadEntriesByAttributeWithOrder("fab_tagungen", "ansprechpartner_mail", "s", $ansprechpartner_mail, "anmeldefrist_beginn", "DESC");
+        return $this->baseLoadEntriesByAttributeWithOrder("fab_tagungen", "ansprechpartner_mail", "s", $ansprechpartner_mail, "anmeldefrist_beginn", "DESC");
     }
 }

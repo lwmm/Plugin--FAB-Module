@@ -30,7 +30,9 @@ class eventQueryHandlerTest extends \PHPUnit_Framework_TestCase {
         $autoloader = new Fab\Service\Autoloader\fabAutoloader();
         $autoloader->setConfig(array("plugins" => "C:/xampp/htdocs/c38/contentory/c_server/plugins/",
                                      "plugin_path" => array ("lw" => "C:/xampp/htdocs/c38/contentory/c_server/modules/lw/")));
-        $this->eventQueryHandler = new Fab\Domain\Event\Model\eventQueryHandler($this->db);     
+        $this->eventQueryHandler = new Fab\Domain\Event\Model\eventQueryHandler($this->db);  
+        $this->eventCommandHandler = new Fab\Domain\Event\Model\eventCommandHandler($this->db);
+        $this->eventCommandHandler->setDebug(false);        
     }
 
     /**
@@ -46,16 +48,199 @@ class eventQueryHandlerTest extends \PHPUnit_Framework_TestCase {
     /**
      * @todo Implement test().
      */
-    public function test()
+    public function testGetAllEvents()
     {
+        $this->createTable();
+        
+        $this->fillTable($this->getArray());
+        $this->fillTable($this->getArray2());
+        $this->fillTable($this->getArray3());
 
+        $result = $this->eventQueryHandler->getAllEvents();
+        unset($result[0]["id"]);
+        unset($result[0]["first_date"]);
+        unset($result[0]["last_date"]);
+        unset($result[1]["id"]);
+        unset($result[1]["first_date"]);
+        unset($result[1]["last_date"]);
+        unset($result[2]["id"]);
+        unset($result[2]["first_date"]);
+        unset($result[2]["last_date"]);
+        
+        $assertedArray[] = $this->getArray2();
+        $assertedArray[] = $this->getArray();
+        $assertedArray[] = $this->getArray3();
+        
+        $this->assertEquals($result,$assertedArray);
     }
     
-    public function getInstace($array)
+    public function testGetEventById()
     {
-        return new \LWddd\ValueObject($array);
+        $result = $this->eventQueryHandler->getEventById(1);
+        unset($result["id"]);
+        unset($result["first_date"]);
+        unset($result["last_date"]);
+        
+        $this->assertEquals($this->getArray(), $result);
+        $this->assertEmpty($this->eventQueryHandler->getEventById(99));
+    }
+    
+    public function testLoadEventsByResponsible()
+    {
+        $result = $this->eventQueryHandler->loadEventsByResponsible("m.mustermann@fz-juelich.de");
+        unset($result[0]["id"]);
+        unset($result[0]["first_date"]);
+        unset($result[0]["last_date"]);
+        unset($result[1]["id"]);
+        unset($result[1]["first_date"]);
+        unset($result[1]["last_date"]);
+        
+        $assertedArray[] = $this->getArray();
+        $assertedArray[] = $this->getArray3();
+        
+        $this->assertEquals($result, $assertedArray);
+        
+        $result = $this->eventQueryHandler->loadEventsByResponsible("nicht.vorhanden@iwas.de");
+        $this->assertEmpty($result);
     }
 
+    public function testDropTable()
+    {
+        $this->db->setStatement("DROP TABLE t:fab_tagungen ");
+        $this->db->pdbquery();
+    }
+
+
+    public function getEventEntityMock()
+    {
+        /* $this->getMock(
+         *      Name der zu mockenden Klasse,
+         *      array( Functionsnamen ),            [ leeres Array => alle Functionen werden gemockt]
+         *      array( uebergebene Konstuktor Argumente ),
+         *      "",                                 [ Klassenname des Mockobjektes ]
+         *      bool                                [ Den Konstruktor der Original Klasse aufrufen ]
+         *  );
+         */
+        return $this->getMock("\\Fab\\Domain\\Event\\Object\\event", array(), array(), "", false);
+    }
+    
+    public function getEventValueObjectMock($array)
+    {
+        return $this->getMock("\\LWddd\\ValueObject", array(), array($array), "", true);
+    }
+    
+    public function createTable()
+    {
+        $this->assertTrue($this->eventCommandHandler->createTable());
+        $this->assertTrue($this->db->tableExists($this->db->gt("fab_tagungen")));        
+    }
+    
+    public function fillTable($array)
+    {          
+        $this->db->setStatement("INSERT INTO t:fab_tagungen ( buchungskreis, v_schluessel, auftragsnr, bezeichnung, v_land, v_ort, anmeldefrist_beginn, anmeldefrist_ende, v_beginn, v_ende, cpd_konto, erloeskonto, steuerkennzeichen, steuersatz, ansprechpartner, ansprechpartner_tel, organisationseinheit, ansprechpartner_mail, stellvertreter_mail, standardbetrag, first_date, last_date ) VALUES ( :buchungskreis, :v_schluessel, :auftragsnr, :bezeichnung, :v_land, :v_ort, :anmeldefrist_beginn, :anmeldefrist_ende, :v_beginn, :v_ende, :cpd_konto, :erloeskonto, :steuerkennzeichen, :steuersatz, :ansprechpartner, :tel_ansprechpartner, :organisationseinheit, :mail_ansprechpartner, :stellvertreter_mail, :standardbetrag, :first_date, :last_date ) ");
+        $this->db->bindParameter("buchungskreis", "s", $array['buchungskreis']);
+        $this->db->bindParameter("v_schluessel", "s", $array['v_schluessel']);
+        $this->db->bindParameter("auftragsnr", "s", $array['auftragsnr']);
+        $this->db->bindParameter("bezeichnung", "s", $array['bezeichnung']);
+        $this->db->bindParameter("v_land", "s", $array['v_land']);
+        $this->db->bindParameter("v_ort", "s", $array['v_ort']);
+        $this->db->bindParameter("anmeldefrist_beginn", "i", $array['anmeldefrist_beginn']);
+        $this->db->bindParameter("anmeldefrist_ende", "i", $array['anmeldefrist_ende']);
+        $this->db->bindParameter("v_beginn", "i", $array['v_beginn']);
+        $this->db->bindParameter("v_ende", "i", $array['v_ende']);
+        $this->db->bindParameter("cpd_konto", "s", $array['cpd_konto']);
+        $this->db->bindParameter("erloeskonto", "s", $array['erloeskonto']);
+        $this->db->bindParameter("steuerkennzeichen", "s", $array['steuerkennzeichen']);
+        $this->db->bindParameter("steuersatz", "s", $array['steuersatz']);
+        $this->db->bindParameter("ansprechpartner", "s", $array['ansprechpartner']);
+        $this->db->bindParameter("tel_ansprechpartner", "i", $array['ansprechpartner_tel']);
+        $this->db->bindParameter("organisationseinheit", "s", $array['organisationseinheit']);
+        $this->db->bindParameter("mail_ansprechpartner", "s", $array['ansprechpartner_mail']);
+        $this->db->bindParameter("stellvertreter_mail", "s", $array['stellvertreter_mail']);
+        $this->db->bindParameter("standardbetrag", "s", $array['standardbetrag']);
+        $this->db->bindParameter("first_date", "i", date("YmdHis"));
+        $this->db->bindParameter("last_date", "i", date("YmdHis"));
+        
+        return $this->db->pdbquery();
+    }
+    
+    public function getArray()
+    {
+        return array(
+            "buchungskreis" => "15",
+            "v_schluessel" => "51543",
+            "auftragsnr" => "45135060",
+            "bezeichnung" => "Tagung 1",
+            "v_land" => "de",
+            "v_ort" => "Ehrenfeld",
+            "anmeldefrist_beginn" => "20130701",
+            "anmeldefrist_ende" => "20130704",
+            "v_beginn" => "20130905",
+            "v_ende" => "20130916",
+            "cpd_konto" => "200270",
+            "erloeskonto" => "4510",
+            "steuerkennzeichen" => "98",
+            "steuersatz" => "9",
+            "ansprechpartner" => "Max Mustermann",
+            "ansprechpartner_tel" => "1111",
+            "organisationseinheit" => "GB-F",
+            "ansprechpartner_mail" => "m.mustermann@fz-juelich.de",
+            "stellvertreter_mail" => "",
+            "standardbetrag" => "100",
+        );
+    }
+    
+    public function getArray2()
+    {
+        return array(
+            "buchungskreis" => "15",
+            "v_schluessel" => "51544",
+            "auftragsnr" => "45135060",
+            "bezeichnung" => "Tagung 2",
+            "v_land" => "de",
+            "v_ort" => "Ehrenfeld",
+            "anmeldefrist_beginn" => "20130901",
+            "anmeldefrist_ende" => "20130704",
+            "v_beginn" => "20130905",
+            "v_ende" => "20130916",
+            "cpd_konto" => "200270",
+            "erloeskonto" => "4510",
+            "steuerkennzeichen" => "98",
+            "steuersatz" => "9",
+            "ansprechpartner" => "Max Mustermann",
+            "ansprechpartner_tel" => "1111",
+            "organisationseinheit" => "GB-F",
+            "ansprechpartner_mail" => "n.mustermann@fz-juelich.de",
+            "stellvertreter_mail" => "",
+            "standardbetrag" => "100",
+        );
+    }
+    
+    public function getArray3()
+    {
+        return array(
+            "buchungskreis" => "15",
+            "v_schluessel" => "51545",
+            "auftragsnr" => "45135060",
+            "bezeichnung" => "Tagung 3",
+            "v_land" => "de",
+            "v_ort" => "Ehrenfeld",
+            "anmeldefrist_beginn" => "20130101",
+            "anmeldefrist_ende" => "20130704",
+            "v_beginn" => "20130905",
+            "v_ende" => "20130916",
+            "cpd_konto" => "200270",
+            "erloeskonto" => "4510",
+            "steuerkennzeichen" => "98",
+            "steuersatz" => "9",
+            "ansprechpartner" => "Max Mustermann",
+            "ansprechpartner_tel" => "1111",
+            "organisationseinheit" => "GB-F",
+            "ansprechpartner_mail" => "m.mustermann@fz-juelich.de",
+            "stellvertreter_mail" => "",
+            "standardbetrag" => "100",
+        );
+    }
 }
 
 ?>

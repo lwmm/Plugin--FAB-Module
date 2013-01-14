@@ -47,16 +47,249 @@ class participantCommandHandlerTest extends \PHPUnit_Framework_TestCase {
     /**
      * @todo Implement test().
      */
-    public function test()
+    public function testCreateTable()
     {
-        
+        $this->assertTrue($this->participantCommandHandler->createTable());
+        $this->assertTrue($this->db->tableExists($this->db->gt("fab_teilnehmer")));
     }
     
-    public function getInstace($array)
+    public function testAddParticipant()
     {
-        return new \LWddd\ValueObject($array);
+        $array = array(
+                "anrede"            => "Herr",
+                "sprache"           => "de",
+                "titel"             => "Prof.",
+                "nachname"          => "Meyer",
+                "vorname"           => "Karl",
+                "institut"          => "GB-F",
+                "unternehmen"       => "FZJ",
+                "strasse"           => "Wilhelm_Johnen-Str.",
+                "plz"               => "52428",
+                "ort"               => "Jülich",
+                "land"              => "de",
+                "mail"              => "m.mustermann@fzj-juelich.de",
+                "ust_id_nr"         => "986743-36436-34g",
+                "zahlweise"         => "K",
+                "teilnehmer_intern" => "1",
+                "betrag"            => "105,73"
+            );
+        
+        $participantValueObjectMock = $this->getParticipantValueObjectMock($array);
+        $participantValueObjectMock->expects($this->at(0))
+                                   ->method("getValueByKey")
+                                   ->will($this->returnValue($array["anrede"]));
+        $participantValueObjectMock->expects($this->at(1))
+                                   ->method("getValueByKey")
+                                   ->will($this->returnValue($array["sprache"]));
+        $participantValueObjectMock->expects($this->at(2))
+                                   ->method("getValueByKey")
+                                   ->will($this->returnValue($array["titel"]));
+        $participantValueObjectMock->expects($this->at(3))
+                                   ->method("getValueByKey")
+                                   ->will($this->returnValue($array["nachname"]));
+        $participantValueObjectMock->expects($this->at(4))
+                                   ->method("getValueByKey")
+                                   ->will($this->returnValue($array["vorname"]));
+        $participantValueObjectMock->expects($this->at(5))
+                                   ->method("getValueByKey")
+                                   ->will($this->returnValue($array["institut"]));
+        $participantValueObjectMock->expects($this->at(6))
+                                   ->method("getValueByKey")
+                                   ->will($this->returnValue($array["unternehmen"]));
+        $participantValueObjectMock->expects($this->at(7))
+                                   ->method("getValueByKey")
+                                   ->will($this->returnValue($array["strasse"]));
+        $participantValueObjectMock->expects($this->at(8))
+                                   ->method("getValueByKey")
+                                   ->will($this->returnValue($array["plz"]));
+        $participantValueObjectMock->expects($this->at(9))
+                                   ->method("getValueByKey")
+                                   ->will($this->returnValue($array["ort"]));
+        $participantValueObjectMock->expects($this->at(10))
+                                   ->method("getValueByKey")
+                                   ->will($this->returnValue($array["land"]));
+        $participantValueObjectMock->expects($this->at(11))
+                                   ->method("getValueByKey")
+                                   ->will($this->returnValue($array["mail"]));
+        $participantValueObjectMock->expects($this->at(12))
+                                   ->method("getValueByKey")
+                                   ->will($this->returnValue($array["ust_id_nr"]));
+        $participantValueObjectMock->expects($this->at(13))
+                                   ->method("getValueByKey")
+                                   ->will($this->returnValue($array["zahlweise"]));
+        $participantValueObjectMock->expects($this->at(14))
+                                   ->method("getValueByKey")
+                                   ->will($this->returnValue($array["teilnehmer_intern"]));
+        $participantValueObjectMock->expects($this->at(15))
+                                   ->method("getValueByKey")
+                                   ->will($this->returnValue($array["betrag"]));
+        
+       $this->assertTrue($this->participantCommandHandler->addParticipant(1, $participantValueObjectMock));
+       
+       $this->db->setStatement("SELECT * FROM t:fab_teilnehmer WHERE id = 1 ");
+       $result = $this->db->pselect1();
+       unset($result["id"]);
+       unset($result["first_date"]);
+       unset($result["last_date"]);
+       
+       $assertedArray = array(
+                "event_id"          => 1,
+                "anrede"            => "Herr",
+                "sprache"           => "de",
+                "titel"             => "Prof.",
+                "nachname"          => "Meyer",
+                "vorname"           => "Karl",
+                "institut"          => "GB-F",
+                "unternehmen"       => "FZJ",
+                "strasse"           => "Wilhelm_Johnen-Str.",
+                "plz"               => "52428",
+                "ort"               => "Jülich",
+                "land"              => "de",
+                "mail"              => "m.mustermann@fzj-juelich.de",
+                "ust_id_nr"         => "986743-36436-34g",
+                "zahlweise"         => "K",
+                "teilnehmer_intern" => "1",
+                "betrag"            => "105,73"
+            );
+       
+        $this->assertEquals($assertedArray, $result);
+    }
+    
+    public function testSaveParticipant()
+    {
+       $array = array(
+                "anrede"            => "Frau",
+                "sprache"           => "de",
+                "titel"             => "Dr.",
+                "nachname"          => "Mueller",
+                "vorname"           => "Heike",
+                "institut"          => "BMBF",
+                "unternehmen"       => "FZJ",
+                "strasse"           => "Wilhelm_Johnen-Str.",
+                "plz"               => "52428",
+                "ort"               => "Jülich",
+                "land"              => "de",
+                "mail"              => "m.mustermann@fzj-juelich.de",
+                "ust_id_nr"         => "986743-36436-34g",
+                "zahlweise"         => "K",
+                "teilnehmer_intern" => "1",
+                "betrag"            => "105,73"
+            );
+       
+        $participantValueObjectMock = $this->getParticipantValueObjectMock($array);
+        $participantValueObjectMock->expects($this->at(0))
+                                   ->method("getValueByKey")
+                                   ->will($this->returnValue($array["anrede"]));
+        $participantValueObjectMock->expects($this->at(1))
+                                   ->method("getValueByKey")
+                                   ->will($this->returnValue($array["sprache"]));
+        $participantValueObjectMock->expects($this->at(2))
+                                   ->method("getValueByKey")
+                                   ->will($this->returnValue($array["titel"]));
+        $participantValueObjectMock->expects($this->at(3))
+                                   ->method("getValueByKey")
+                                   ->will($this->returnValue($array["nachname"]));
+        $participantValueObjectMock->expects($this->at(4))
+                                   ->method("getValueByKey")
+                                   ->will($this->returnValue($array["vorname"]));
+        $participantValueObjectMock->expects($this->at(5))
+                                   ->method("getValueByKey")
+                                   ->will($this->returnValue($array["institut"]));
+        $participantValueObjectMock->expects($this->at(6))
+                                   ->method("getValueByKey")
+                                   ->will($this->returnValue($array["unternehmen"]));
+        $participantValueObjectMock->expects($this->at(7))
+                                   ->method("getValueByKey")
+                                   ->will($this->returnValue($array["strasse"]));
+        $participantValueObjectMock->expects($this->at(8))
+                                   ->method("getValueByKey")
+                                   ->will($this->returnValue($array["plz"]));
+        $participantValueObjectMock->expects($this->at(9))
+                                   ->method("getValueByKey")
+                                   ->will($this->returnValue($array["ort"]));
+        $participantValueObjectMock->expects($this->at(10))
+                                   ->method("getValueByKey")
+                                   ->will($this->returnValue($array["land"]));
+        $participantValueObjectMock->expects($this->at(11))
+                                   ->method("getValueByKey")
+                                   ->will($this->returnValue($array["mail"]));
+        $participantValueObjectMock->expects($this->at(12))
+                                   ->method("getValueByKey")
+                                   ->will($this->returnValue($array["ust_id_nr"]));
+        $participantValueObjectMock->expects($this->at(13))
+                                   ->method("getValueByKey")
+                                   ->will($this->returnValue($array["zahlweise"]));
+        $participantValueObjectMock->expects($this->at(14))
+                                   ->method("getValueByKey")
+                                   ->will($this->returnValue($array["teilnehmer_intern"]));
+        $participantValueObjectMock->expects($this->at(15))
+                                   ->method("getValueByKey")
+                                   ->will($this->returnValue($array["betrag"]));
+        
+       $this->assertTrue($this->participantCommandHandler->saveParticipant(1,$participantValueObjectMock));
+       
+       $this->db->setStatement("SELECT * FROM t:fab_teilnehmer WHERE id = 1 ");
+       $result = $this->db->pselect1();
+       unset($result["id"]);
+       unset($result["first_date"]);
+       unset($result["last_date"]);
+       
+       $assertedArray = array(
+                "event_id"          => 1,
+                "anrede"            => "Frau",
+                "sprache"           => "de",
+                "titel"             => "Dr.",
+                "nachname"          => "Mueller",
+                "vorname"           => "Heike",
+                "institut"          => "BMBF",
+                "unternehmen"       => "FZJ",
+                "strasse"           => "Wilhelm_Johnen-Str.",
+                "plz"               => "52428",
+                "ort"               => "Jülich",
+                "land"              => "de",
+                "mail"              => "m.mustermann@fzj-juelich.de",
+                "ust_id_nr"         => "986743-36436-34g",
+                "zahlweise"         => "K",
+                "teilnehmer_intern" => "1",
+                "betrag"            => "105,73"
+            );
+        $this->assertEquals($assertedArray, $result);
     }
 
-}
+    public function testDeleteParticipant()
+    {
+        $participantEntityMock = $this->getParticipantEntityMock();
+        $participantEntityMock->expects($this->once())
+                              ->method("isDeleteable")
+                              ->will($this->returnValue(true));
+        $participantEntityMock->expects($this->exactly(2))
+                              ->method("getId")
+                              ->will($this->returnValue(1));
 
-?>
+        $this->assertTrue($this->participantCommandHandler->deleteParticipant($participantEntityMock));
+    }
+    
+    public function testDropTable()
+    {
+        $this->db->setStatement("DROP TABLE t:fab_teilnehmer ");
+        $this->db->pdbquery();
+    }
+    
+    public function getParticipantEntityMock()
+    {
+        /* $this->getMock(
+         *      Name der zu mockenden Klasse,
+         *      array( Functionsnamen ),            [ leeres Array => alle Functionen werden gemockt]
+         *      array( uebergebene Konstuktor Argumente ),
+         *      "",                                 [ Klassenname des Mockobjektes ]
+         *      bool                                [ Den Konstruktor der Original Klasse aufrufen ]
+         *  );
+         */
+        return $this->getMock("\\Fab\\Domain\\Event\\Object\\event", array(), array(), "", false);
+    }
+    
+    public function getParticipantValueObjectMock($array)
+    {
+        return $this->getMock("\\LWddd\\ValueObject", array(), array($array), "", true);
+    }
+}

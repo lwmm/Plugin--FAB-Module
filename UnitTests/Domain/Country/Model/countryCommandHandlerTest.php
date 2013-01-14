@@ -40,23 +40,48 @@ class countryCommandHandlerTest extends \PHPUnit_Framework_TestCase {
      */
     protected function tearDown()
     {
-        #$this->db->setStatement("DROP TABLE t:fab_tagungen ");
-        #$this->db->pdbquery();
+        
     }
 
     /**
      * @todo Implement test().
      */
-    public function test()
+    public function testCreateTable()
     {
-        
+        $this->assertTrue($this->countryCommandHandler->createTable());
+        $this->assertTrue($this->db->tableExists($this->db->gt("fab_laender")));
     }
     
-    public function getInstace($array)
+    public function testImportCountries()
     {
-        return new \LWddd\ValueObject($array);
+        $this->assertTrue($this->countryCommandHandler->importCountries());
+        
+        $data = array();
+        $file = fopen( dirname(__FILE__)."/../../../../Domain/Country/Model/data/countries.csv", 'r');
+        while (($line = fgetcsv($file,100,";")) !== FALSE) {
+            array_push($data, $line);
+        }
+        fclose($file);
+
+        $assertedArray = array();
+        foreach ($data as $value) {
+            array_push($assertedArray,array("land" => $value[0], "bezeichnung" => $value[1]));
+        }
+        
+        foreach ($assertedArray as $key => $value) {
+            $land[$key] = strtolower($value["land"]);
+        }
+        array_multisort($land, SORT_ASC, $assertedArray);
+        
+        $this->db->setStatement("SELECT * FROM t:fab_laender ");
+        $result = $this->db->pselect();
+        
+        $this->assertEquals($assertedArray, $result);
     }
-
+    
+    public function testDropTable()
+    {
+        $this->db->setStatement("DROP TABLE t:fab_laender ");
+        $this->db->pdbquery();
+    }
 }
-
-?>
