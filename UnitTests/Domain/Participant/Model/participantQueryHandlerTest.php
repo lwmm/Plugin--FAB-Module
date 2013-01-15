@@ -6,6 +6,7 @@ require_once dirname(__FILE__) . '/../../../../../../../c_libraries/lw/lw_object
 require_once dirname(__FILE__) . '/../../../../../../../c_libraries/lw/lw_db.class.php';
 require_once dirname(__FILE__) . '/../../../../../../../c_libraries/lw/lw_db_mysqli.class.php';
 require_once dirname(__FILE__) . '/../../../../../../../c_libraries/lw/lw_registry.class.php';
+require_once dirname(__FILE__) . '/../../../Config/phpUnitConfig.php';
 
 /**
  * Test class for eventValidate.
@@ -23,16 +24,22 @@ class participantQueryHandlerTest extends \PHPUnit_Framework_TestCase {
      * This method is called before a test is executed.
      */
     protected function setUp() {
-        $db = new lw_db_mysqli("root", "", "localhost", "fab_test");
+        $phpUnitConfig = new phpUnitConfig();
+        $config = $phpUnitConfig->getConfig();
+        
+        $db = new lw_db_mysqli($config["lwdb"]["user"], $config["lwdb"]["pass"], $config["lwdb"]["host"], $config["lwdb"]["db"]);
         $db->connect();
         $this->db = $db;
         
         $autoloader = new Fab\Service\Autoloader\fabAutoloader();
-        $autoloader->setConfig(array("plugins" => "C:/xampp/htdocs/c38/contentory/c_server/plugins/",
-                                     "plugin_path" => array ("lw" => "C:/xampp/htdocs/c38/contentory/c_server/modules/lw/")));
+        $autoloader->setConfig(array("plugins" => $config["plugins"],
+                                     "plugin_path" => array ("lw" => $config["plugin_path"]["lw"] )));
+        
         $this->participantQueryHandler = new Fab\Domain\Participant\Model\participantQueryHandler($this->db);     
         $this->participantCommandHandler = new Fab\Domain\Participant\Model\participantCommandHandler($this->db);
         $this->participantCommandHandler->setDebug(false);
+        
+        $this->assertTrue($this->participantCommandHandler->createTable());
     }
 
     /**
@@ -41,8 +48,8 @@ class participantQueryHandlerTest extends \PHPUnit_Framework_TestCase {
      */
     protected function tearDown()
     {
-        #$this->db->setStatement("DROP TABLE t:fab_tagungen ");
-        #$this->db->pdbquery();
+        $this->db->setStatement("DROP TABLE t:fab_teilnehmer ");
+        $this->db->pdbquery();
     }
 
     /**
@@ -50,30 +57,10 @@ class participantQueryHandlerTest extends \PHPUnit_Framework_TestCase {
      */
     public function testLoadParticipantsByEvent()
     {
-        $this->createTable();
-        
-        $array = array(
-                "anrede"            => "Herr",
-                "sprache"           => "de",
-                "titel"             => "Prof.",
-                "nachname"          => "Meyer",
-                "vorname"           => "Karl",
-                "institut"          => "GB-F",
-                "unternehmen"       => "FZJ",
-                "strasse"           => "Wilhelm_Johnen-Str.",
-                "plz"               => "52428",
-                "ort"               => "Jülich",
-                "land"              => "de",
-                "mail"              => "m.mustermann@fzj-juelich.de",
-                "ust_id_nr"         => "986743-36436-34g",
-                "zahlweise"         => "K",
-                "teilnehmer_intern" => "1",
-                "betrag"            => "105,73"
-            );
-        $this->fillTable(1, $array);
-        $this->fillTable(3, $array);
-        $this->fillTable(2, $array);
-        $this->fillTable(1, $array);
+        $this->fillTable(1);
+        $this->fillTable(3);
+        $this->fillTable(2);
+        $this->fillTable(1);
 
         $result = $this->participantQueryHandler->loadParticipantsByEvent(1);
         unset($result[0]["id"]);
@@ -127,6 +114,8 @@ class participantQueryHandlerTest extends \PHPUnit_Framework_TestCase {
     
     public function testLoadParticipantById()
     {
+        $this->fillTable(1);
+        
         $result = $this->participantQueryHandler->loadParticipantById(1);
         unset($result["id"]);
         unset($result["first_date"]);
@@ -153,15 +142,28 @@ class participantQueryHandlerTest extends \PHPUnit_Framework_TestCase {
         
         $this->assertEquals($assertedArray, $result);
     }
-    
-    public function testDropTable()
+
+    public function fillTable($event_id)
     {
-        $this->db->setStatement("DROP TABLE t:fab_teilnehmer ");
-        $this->db->pdbquery();
-    }
-    
-    public function fillTable($event_id, $array)
-    {
+        $array = array(
+                "anrede"            => "Herr",
+                "sprache"           => "de",
+                "titel"             => "Prof.",
+                "nachname"          => "Meyer",
+                "vorname"           => "Karl",
+                "institut"          => "GB-F",
+                "unternehmen"       => "FZJ",
+                "strasse"           => "Wilhelm_Johnen-Str.",
+                "plz"               => "52428",
+                "ort"               => "Jülich",
+                "land"              => "de",
+                "mail"              => "m.mustermann@fzj-juelich.de",
+                "ust_id_nr"         => "986743-36436-34g",
+                "zahlweise"         => "K",
+                "teilnehmer_intern" => "1",
+                "betrag"            => "105,73"
+            );
+        
         $this->db->setStatement("INSERT INTO t:fab_teilnehmer ( event_id, anrede, sprache, titel, nachname, vorname, institut, unternehmen, strasse, plz, ort, land, mail, ust_id_nr, zahlweise, teilnehmer_intern, betrag, first_date, last_date ) VALUES ( :event_id, :anrede, :sprache, :titel, :nachname, :vorname, :institut, :unternehmen, :strasse, :plz, :ort, :land, :mail, :ust_id_nr, :zahlweise, :teilnehmer_intern, :betrag, :first_date, :last_date ) ");
         $this->db->bindParameter("event_id", "i", $event_id);
         $this->db->bindParameter("anrede", "s", $array['anrede']);
@@ -185,10 +187,4 @@ class participantQueryHandlerTest extends \PHPUnit_Framework_TestCase {
         
         $this->db->pdbquery();
     }        
-    
-    public function createTable()
-    {
-        $this->assertTrue($this->participantCommandHandler->createTable());
-        $this->assertTrue($this->db->tableExists($this->db->gt("fab_teilnehmer")));
-    }
 }

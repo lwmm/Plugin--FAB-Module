@@ -6,6 +6,7 @@ require_once dirname(__FILE__) . '/../../../../../../../c_libraries/lw/lw_object
 require_once dirname(__FILE__) . '/../../../../../../../c_libraries/lw/lw_db.class.php';
 require_once dirname(__FILE__) . '/../../../../../../../c_libraries/lw/lw_db_mysqli.class.php';
 require_once dirname(__FILE__) . '/../../../../../../../c_libraries/lw/lw_registry.class.php';
+require_once dirname(__FILE__) . '/../../../Config/phpUnitConfig.php';
 
 /**
  * Test class for eventValidate.
@@ -23,15 +24,21 @@ class countryCommandHandlerTest extends \PHPUnit_Framework_TestCase {
      * This method is called before a test is executed.
      */
     protected function setUp() {
-        $db = new lw_db_mysqli("root", "", "localhost", "fab_test");
+        $phpUnitConfig = new phpUnitConfig();
+        $config = $phpUnitConfig->getConfig();
+        
+        $db = new lw_db_mysqli($config["lwdb"]["user"], $config["lwdb"]["pass"], $config["lwdb"]["host"], $config["lwdb"]["db"]);
         $db->connect();
         $this->db = $db;
         
         $autoloader = new Fab\Service\Autoloader\fabAutoloader();
-        $autoloader->setConfig(array("plugins" => "C:/xampp/htdocs/c38/contentory/c_server/plugins/",
-                                     "plugin_path" => array ("lw" => "C:/xampp/htdocs/c38/contentory/c_server/modules/lw/")));
+        $autoloader->setConfig(array("plugins" => $config["plugins"],
+                                     "plugin_path" => array ("lw" => $config["plugin_path"]["lw"] )));
+        
         $this->countryCommandHandler = new Fab\Domain\Country\Model\countryCommandHandler($this->db);
-        $this->countryCommandHandler->setDebug(false);        
+        $this->countryCommandHandler->setDebug(false);  
+        
+        $this->assertTrue($this->countryCommandHandler->createTable());
     }
 
     /**
@@ -40,7 +47,8 @@ class countryCommandHandlerTest extends \PHPUnit_Framework_TestCase {
      */
     protected function tearDown()
     {
-        
+        $this->db->setStatement("DROP TABLE t:fab_laender ");
+        $this->db->pdbquery();
     }
 
     /**
@@ -48,6 +56,8 @@ class countryCommandHandlerTest extends \PHPUnit_Framework_TestCase {
      */
     public function testCreateTable()
     {
+        $this->tearDown();
+        
         $this->assertTrue($this->countryCommandHandler->createTable());
         $this->assertTrue($this->db->tableExists($this->db->gt("fab_laender")));
     }
@@ -77,11 +87,5 @@ class countryCommandHandlerTest extends \PHPUnit_Framework_TestCase {
         $result = $this->db->pselect();
         
         $this->assertEquals($assertedArray, $result);
-    }
-    
-    public function testDropTable()
-    {
-        $this->db->setStatement("DROP TABLE t:fab_laender ");
-        $this->db->pdbquery();
     }
 }

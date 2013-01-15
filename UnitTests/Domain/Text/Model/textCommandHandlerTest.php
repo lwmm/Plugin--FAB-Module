@@ -6,6 +6,7 @@ require_once dirname(__FILE__) . '/../../../../../../../c_libraries/lw/lw_object
 require_once dirname(__FILE__) . '/../../../../../../../c_libraries/lw/lw_db.class.php';
 require_once dirname(__FILE__) . '/../../../../../../../c_libraries/lw/lw_db_mysqli.class.php';
 require_once dirname(__FILE__) . '/../../../../../../../c_libraries/lw/lw_registry.class.php';
+require_once dirname(__FILE__) . '/../../../Config/phpUnitConfig.php';
 
 /**
  * Test class for eventValidate.
@@ -23,15 +24,21 @@ class textCommandHandlerTest extends \PHPUnit_Framework_TestCase {
      * This method is called before a test is executed.
      */
     protected function setUp() {
-        $db = new lw_db_mysqli("root", "", "localhost", "fab_test");
+        $phpUnitConfig = new phpUnitConfig();
+        $config = $phpUnitConfig->getConfig();
+        
+        $db = new lw_db_mysqli($config["lwdb"]["user"], $config["lwdb"]["pass"], $config["lwdb"]["host"], $config["lwdb"]["db"]);
         $db->connect();
         $this->db = $db;
         
         $autoloader = new Fab\Service\Autoloader\fabAutoloader();
-        $autoloader->setConfig(array("plugins" => "C:/xampp/htdocs/c38/contentory/c_server/plugins/",
-                                     "plugin_path" => array ("lw" => "C:/xampp/htdocs/c38/contentory/c_server/modules/lw/")));
+        $autoloader->setConfig(array("plugins" => $config["plugins"],
+                                     "plugin_path" => array ("lw" => $config["plugin_path"]["lw"] )));
+        
         $this->textCommandHandler = new Fab\Domain\Text\Model\textCommandHandler($this->db);
         $this->textCommandHandler->setDebug(false);        
+        
+        $this->assertTrue($this->textCommandHandler->createTable());
     }
 
     /**
@@ -40,8 +47,8 @@ class textCommandHandlerTest extends \PHPUnit_Framework_TestCase {
      */
     protected function tearDown()
     {
-        #$this->db->setStatement("DROP TABLE t:fab_tagungen ");
-        #$this->db->pdbquery();
+        $this->db->setStatement("DROP TABLE t:fab_text ");
+        $this->db->pdbquery();
     }
 
     /**
@@ -49,6 +56,8 @@ class textCommandHandlerTest extends \PHPUnit_Framework_TestCase {
      */
     public function testCreateTable()
     {
+        $this->tearDown();
+        
         $this->assertTrue($this->textCommandHandler->createTable());
         $this->assertTrue($this->db->tableExists($this->db->gt("fab_Text")));
     }
@@ -100,6 +109,8 @@ class textCommandHandlerTest extends \PHPUnit_Framework_TestCase {
     
     public function testSaveText()
     {
+        $this->fillTableWithoutFunctionAddText();
+        
         $array = array(
                 "key"       => "updated key", 
                 "content"   => "updated content", 
@@ -136,6 +147,8 @@ class textCommandHandlerTest extends \PHPUnit_Framework_TestCase {
     
     public function testDeleteText()
     {
+        $this->fillTableWithoutFunctionAddText();
+        
         $textEntityMock = $this->getTextEntityMock();
         $textEntityMock->expects($this->once())
                        ->method("isDeleteable")
@@ -143,16 +156,10 @@ class textCommandHandlerTest extends \PHPUnit_Framework_TestCase {
         $textEntityMock->expects($this->exactly(2))
                        ->method("getId")
                        ->will($this->returnValue(1));
-
+        
         $this->assertTrue($this->textCommandHandler->deleteText($textEntityMock));
     }
-    
-    public function testDropTable()
-    {
-        $this->db->setStatement("DROP TABLE t:fab_text ");
-        $this->db->pdbquery();
-    }
-    
+
     public function getTextEntityMock()
     {
         /* $this->getMock(
@@ -190,5 +197,28 @@ class textCommandHandlerTest extends \PHPUnit_Framework_TestCase {
                             ->method("getValueByKey")
                             ->will($this->returnValue($array["category"]));
         $this->assertTrue($this->textCommandHandler->addText($textValueObjectMock));
+    }
+    
+    public function fillTableWithoutFunctionAddText()
+    {
+        $array = array(
+                "key"       => "test key", 
+                "content"   => "ttttttttttttttttttteeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeessssssssssssssssssssssssssssssssssstttttttttttttttt   content", 
+                "language"  => "de", 
+                "category"  => "test category");
+        
+        $this->db->setStatement("INSERT INTO t:fab_text ( `key`, content, language, category, first_date, last_date ) VALUES ( :key, :content, :language, :category, :first_date, :last_date ) ");
+        $this->db->bindParameter("key", "s", $array['key']);
+        $this->db->bindParameter("content", "s", $array['content']);
+        if($array['language'] == ""){
+            $this->db->bindParameter("language", "s", "de");
+        }else{
+            $this->db->bindParameter("language", "s", $array['language']);
+        }
+        $this->db->bindParameter("category", "s", $array['category']);
+        $this->db->bindParameter("first_date", "i", date("YmdHis"));
+        $this->db->bindParameter("last_date", "i", date("YmdHis"));
+        
+       return $this->db->pdbquery();
     }
 }

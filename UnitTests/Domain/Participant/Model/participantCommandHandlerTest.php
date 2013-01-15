@@ -6,6 +6,7 @@ require_once dirname(__FILE__) . '/../../../../../../../c_libraries/lw/lw_object
 require_once dirname(__FILE__) . '/../../../../../../../c_libraries/lw/lw_db.class.php';
 require_once dirname(__FILE__) . '/../../../../../../../c_libraries/lw/lw_db_mysqli.class.php';
 require_once dirname(__FILE__) . '/../../../../../../../c_libraries/lw/lw_registry.class.php';
+require_once dirname(__FILE__) . '/../../../Config/phpUnitConfig.php';
 
 /**
  * Test class for eventValidate.
@@ -23,15 +24,21 @@ class participantCommandHandlerTest extends \PHPUnit_Framework_TestCase {
      * This method is called before a test is executed.
      */
     protected function setUp() {
-        $db = new lw_db_mysqli("root", "", "localhost", "fab_test");
+        $phpUnitConfig = new phpUnitConfig();
+        $config = $phpUnitConfig->getConfig();
+        
+        $db = new lw_db_mysqli($config["lwdb"]["user"], $config["lwdb"]["pass"], $config["lwdb"]["host"], $config["lwdb"]["db"]);
         $db->connect();
         $this->db = $db;
         
         $autoloader = new Fab\Service\Autoloader\fabAutoloader();
-        $autoloader->setConfig(array("plugins" => "C:/xampp/htdocs/c38/contentory/c_server/plugins/",
-                                     "plugin_path" => array ("lw" => "C:/xampp/htdocs/c38/contentory/c_server/modules/lw/")));
+        $autoloader->setConfig(array("plugins" => $config["plugins"],
+                                     "plugin_path" => array ("lw" => $config["plugin_path"]["lw"] )));
+        
         $this->participantCommandHandler = new Fab\Domain\Participant\Model\participantCommandHandler($this->db);
         $this->participantCommandHandler->setDebug(false);        
+        
+        $this->assertTrue($this->participantCommandHandler->createTable());
     }
 
     /**
@@ -40,8 +47,8 @@ class participantCommandHandlerTest extends \PHPUnit_Framework_TestCase {
      */
     protected function tearDown()
     {
-        #$this->db->setStatement("DROP TABLE t:fab_tagungen ");
-        #$this->db->pdbquery();
+        $this->db->setStatement("DROP TABLE t:fab_teilnehmer ");
+        $this->db->pdbquery();
     }
 
     /**
@@ -49,6 +56,8 @@ class participantCommandHandlerTest extends \PHPUnit_Framework_TestCase {
      */
     public function testCreateTable()
     {
+        $this->tearDown();
+        
         $this->assertTrue($this->participantCommandHandler->createTable());
         $this->assertTrue($this->db->tableExists($this->db->gt("fab_teilnehmer")));
     }
@@ -157,6 +166,8 @@ class participantCommandHandlerTest extends \PHPUnit_Framework_TestCase {
     
     public function testSaveParticipant()
     {
+        $this->fillTable(1);
+        
        $array = array(
                 "anrede"            => "Frau",
                 "sprache"           => "de",
@@ -258,6 +269,8 @@ class participantCommandHandlerTest extends \PHPUnit_Framework_TestCase {
 
     public function testDeleteParticipant()
     {
+        $this->fillTable(1);
+        
         $participantEntityMock = $this->getParticipantEntityMock();
         $participantEntityMock->expects($this->once())
                               ->method("isDeleteable")
@@ -267,14 +280,11 @@ class participantCommandHandlerTest extends \PHPUnit_Framework_TestCase {
                               ->will($this->returnValue(1));
 
         $this->assertTrue($this->participantCommandHandler->deleteParticipant($participantEntityMock));
+        
+        $this->db->setStatement("SELECT * FROM t:fab_teilnehmer WHERE id = 1 ");
+        $this->assertEmpty($this->db->pselect1());
     }
-    
-    public function testDropTable()
-    {
-        $this->db->setStatement("DROP TABLE t:fab_teilnehmer ");
-        $this->db->pdbquery();
-    }
-    
+
     public function getParticipantEntityMock()
     {
         /* $this->getMock(
@@ -291,5 +301,50 @@ class participantCommandHandlerTest extends \PHPUnit_Framework_TestCase {
     public function getParticipantValueObjectMock($array)
     {
         return $this->getMock("\\LWddd\\ValueObject", array(), array($array), "", true);
+    }
+    
+    public function fillTable($event_id)
+    {
+        $array = array(
+                "anrede"            => "Herr",
+                "sprache"           => "de",
+                "titel"             => "Prof.",
+                "nachname"          => "Meyer",
+                "vorname"           => "Karl",
+                "institut"          => "GB-F",
+                "unternehmen"       => "FZJ",
+                "strasse"           => "Wilhelm_Johnen-Str.",
+                "plz"               => "52428",
+                "ort"               => "Jülich",
+                "land"              => "de",
+                "mail"              => "m.mustermann@fzj-juelich.de",
+                "ust_id_nr"         => "986743-36436-34g",
+                "zahlweise"         => "K",
+                "teilnehmer_intern" => "1",
+                "betrag"            => "105,73"
+            );
+        
+        $this->db->setStatement("INSERT INTO t:fab_teilnehmer ( event_id, anrede, sprache, titel, nachname, vorname, institut, unternehmen, strasse, plz, ort, land, mail, ust_id_nr, zahlweise, teilnehmer_intern, betrag, first_date, last_date ) VALUES ( :event_id, :anrede, :sprache, :titel, :nachname, :vorname, :institut, :unternehmen, :strasse, :plz, :ort, :land, :mail, :ust_id_nr, :zahlweise, :teilnehmer_intern, :betrag, :first_date, :last_date ) ");
+        $this->db->bindParameter("event_id", "i", $event_id);
+        $this->db->bindParameter("anrede", "s", $array['anrede']);
+        $this->db->bindParameter("sprache", "s", $array['sprache']);
+        $this->db->bindParameter("titel", "s", $array['titel']);
+        $this->db->bindParameter("nachname", "s", $array['nachname']);
+        $this->db->bindParameter("vorname", "s", $array['vorname']);
+        $this->db->bindParameter("institut", "s", $array['institut']);
+        $this->db->bindParameter("unternehmen", "s", $array['unternehmen']);
+        $this->db->bindParameter("strasse", "s", $array['strasse']);
+        $this->db->bindParameter("plz", "s", $array['plz']);
+        $this->db->bindParameter("ort", "s", $array['ort']);
+        $this->db->bindParameter("land", "s", $array['land']);
+        $this->db->bindParameter("mail", "s", $array['mail']);
+        $this->db->bindParameter("ust_id_nr", "s", $array['ust_id_nr']);
+        $this->db->bindParameter("zahlweise", "s", $array['zahlweise']);
+        $this->db->bindParameter("teilnehmer_intern", "i", $array['teilnehmer_intern']);
+        $this->db->bindParameter("betrag", "s", $array['betrag']);
+        $this->db->bindParameter("first_date", "i", date("YmdHis"));
+        $this->db->bindParameter("last_date", "i", date("YmdHis"));
+        
+        return $this->db->pdbquery();
     }
 }

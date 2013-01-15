@@ -6,6 +6,7 @@ require_once dirname(__FILE__) . '/../../../../../../../c_libraries/lw/lw_object
 require_once dirname(__FILE__) . '/../../../../../../../c_libraries/lw/lw_db.class.php';
 require_once dirname(__FILE__) . '/../../../../../../../c_libraries/lw/lw_db_mysqli.class.php';
 require_once dirname(__FILE__) . '/../../../../../../../c_libraries/lw/lw_registry.class.php';
+require_once dirname(__FILE__) . '/../../../Config/phpUnitConfig.php';
 
 /**
  * Test class for eventValidate.
@@ -23,15 +24,21 @@ class countryQueryHandlerTest extends \PHPUnit_Framework_TestCase {
      * This method is called before a test is executed.
      */
     protected function setUp() {
-        $db = new lw_db_mysqli("root", "", "localhost", "fab_test");
+        $phpUnitConfig = new phpUnitConfig();
+        $config = $phpUnitConfig->getConfig();
+        
+        $db = new lw_db_mysqli($config["lwdb"]["user"], $config["lwdb"]["pass"], $config["lwdb"]["host"], $config["lwdb"]["db"]);
         $db->connect();
         $this->db = $db;
         
         $autoloader = new Fab\Service\Autoloader\fabAutoloader();
-        $autoloader->setConfig(array("plugins" => "C:/xampp/htdocs/c38/contentory/c_server/plugins/",
-                                     "plugin_path" => array ("lw" => "C:/xampp/htdocs/c38/contentory/c_server/modules/lw/")));
+        $autoloader->setConfig(array("plugins" => $config["plugins"],
+                                     "plugin_path" => array ("lw" => $config["plugin_path"]["lw"] )));
+        
         $this->countryQueryHandler = new Fab\Domain\Country\Model\countryQueryHandler($this->db);     
-        $this->countryCommandHandler = new Fab\Domain\Country\Model\countryCommandHandler($this->db);     
+        $this->countryCommandHandler = new Fab\Domain\Country\Model\countryCommandHandler($this->db);
+        
+        $this->assertTrue($this->countryCommandHandler->createTable());
     }
 
     /**
@@ -40,17 +47,15 @@ class countryQueryHandlerTest extends \PHPUnit_Framework_TestCase {
      */
     protected function tearDown()
     {
-        #$this->db->setStatement("DROP TABLE t:fab_tagungen ");
-        #$this->db->pdbquery();
+        $this->db->setStatement("DROP TABLE t:fab_laender ");
+        $this->db->pdbquery();
     }
 
     /**
      * @todo Implement test().
      */
     public function testGetAllCountries()
-    {
-        $this->createTable();
-        
+    {        
         $this->assertTrue($this->countryCommandHandler->importCountries());
         
         $data = array();
@@ -71,17 +76,5 @@ class countryQueryHandlerTest extends \PHPUnit_Framework_TestCase {
         array_multisort($land, SORT_ASC, $assertedArray);
         
         $this->assertEquals($assertedArray, $this->countryQueryHandler->getAllCountries());
-    }
-    
-    public function testDropTable()
-    {
-        $this->db->setStatement("DROP TABLE t:fab_laender ");
-        $this->db->pdbquery();
-    }    
-    
-    public function createTable()
-    {
-        $this->assertTrue($this->countryCommandHandler->createTable());
-        $this->assertTrue($this->db->tableExists($this->db->gt("fab_laender")));
-    }
+    } 
 }

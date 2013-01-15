@@ -6,6 +6,7 @@ require_once dirname(__FILE__) . '/../../../../../../../c_libraries/lw/lw_object
 require_once dirname(__FILE__) . '/../../../../../../../c_libraries/lw/lw_db.class.php';
 require_once dirname(__FILE__) . '/../../../../../../../c_libraries/lw/lw_db_mysqli.class.php';
 require_once dirname(__FILE__) . '/../../../../../../../c_libraries/lw/lw_registry.class.php';
+require_once dirname(__FILE__) . '/../../../Config/phpUnitConfig.php';
 
 /**
  * Test class for eventValidate.
@@ -23,16 +24,22 @@ class eventQueryHandlerTest extends \PHPUnit_Framework_TestCase {
      * This method is called before a test is executed.
      */
     protected function setUp() {
-        $db = new lw_db_mysqli("root", "", "localhost", "fab_test");
+        $phpUnitConfig = new phpUnitConfig();
+        $config = $phpUnitConfig->getConfig();
+        
+        $db = new lw_db_mysqli($config["lwdb"]["user"], $config["lwdb"]["pass"], $config["lwdb"]["host"], $config["lwdb"]["db"]);
         $db->connect();
         $this->db = $db;
         
         $autoloader = new Fab\Service\Autoloader\fabAutoloader();
-        $autoloader->setConfig(array("plugins" => "C:/xampp/htdocs/c38/contentory/c_server/plugins/",
-                                     "plugin_path" => array ("lw" => "C:/xampp/htdocs/c38/contentory/c_server/modules/lw/")));
+        $autoloader->setConfig(array("plugins" => $config["plugins"],
+                                     "plugin_path" => array ("lw" => $config["plugin_path"]["lw"] )));
+        
         $this->eventQueryHandler = new Fab\Domain\Event\Model\eventQueryHandler($this->db);  
         $this->eventCommandHandler = new Fab\Domain\Event\Model\eventCommandHandler($this->db);
         $this->eventCommandHandler->setDebug(false);        
+        
+        $this->assertTrue($this->eventCommandHandler->createTable());
     }
 
     /**
@@ -41,17 +48,15 @@ class eventQueryHandlerTest extends \PHPUnit_Framework_TestCase {
      */
     protected function tearDown()
     {
-        #$this->db->setStatement("DROP TABLE t:fab_tagungen ");
-        #$this->db->pdbquery();
+        $this->db->setStatement("DROP TABLE t:fab_tagungen ");
+        $this->db->pdbquery();
     }
 
     /**
      * @todo Implement test().
      */
     public function testGetAllEvents()
-    {
-        $this->createTable();
-        
+    {        
         $this->fillTable($this->getArray());
         $this->fillTable($this->getArray2());
         $this->fillTable($this->getArray3());
@@ -76,6 +81,7 @@ class eventQueryHandlerTest extends \PHPUnit_Framework_TestCase {
     
     public function testGetEventById()
     {
+        $this->fillTable($this->getArray());
         $result = $this->eventQueryHandler->getEventById(1);
         unset($result["id"]);
         unset($result["first_date"]);
@@ -87,6 +93,9 @@ class eventQueryHandlerTest extends \PHPUnit_Framework_TestCase {
     
     public function testLoadEventsByResponsible()
     {
+        $this->fillTable($this->getArray());
+        $this->fillTable($this->getArray3());
+        
         $result = $this->eventQueryHandler->loadEventsByResponsible("m.mustermann@fz-juelich.de");
         unset($result[0]["id"]);
         unset($result[0]["first_date"]);
@@ -102,37 +111,6 @@ class eventQueryHandlerTest extends \PHPUnit_Framework_TestCase {
         
         $result = $this->eventQueryHandler->loadEventsByResponsible("nicht.vorhanden@iwas.de");
         $this->assertEmpty($result);
-    }
-
-    public function testDropTable()
-    {
-        $this->db->setStatement("DROP TABLE t:fab_tagungen ");
-        $this->db->pdbquery();
-    }
-
-
-    public function getEventEntityMock()
-    {
-        /* $this->getMock(
-         *      Name der zu mockenden Klasse,
-         *      array( Functionsnamen ),            [ leeres Array => alle Functionen werden gemockt]
-         *      array( uebergebene Konstuktor Argumente ),
-         *      "",                                 [ Klassenname des Mockobjektes ]
-         *      bool                                [ Den Konstruktor der Original Klasse aufrufen ]
-         *  );
-         */
-        return $this->getMock("\\Fab\\Domain\\Event\\Object\\event", array(), array(), "", false);
-    }
-    
-    public function getEventValueObjectMock($array)
-    {
-        return $this->getMock("\\LWddd\\ValueObject", array(), array($array), "", true);
-    }
-    
-    public function createTable()
-    {
-        $this->assertTrue($this->eventCommandHandler->createTable());
-        $this->assertTrue($this->db->tableExists($this->db->gt("fab_tagungen")));        
     }
     
     public function fillTable($array)
@@ -242,5 +220,3 @@ class eventQueryHandlerTest extends \PHPUnit_Framework_TestCase {
         );
     }
 }
-
-?>
