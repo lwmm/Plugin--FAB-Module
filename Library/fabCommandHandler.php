@@ -36,7 +36,7 @@ class fabCommandHandler
             return $this->basePdbquery();
         }
         else { 
-            throw new Exception('...'); 
+            throw new Exception('DELETE ERROR -> TABLE: '. $table_name); 
         }
     }
 
@@ -74,7 +74,7 @@ class fabCommandHandler
                 return true;
             }
             else {
-                throw new Exception('...'); 
+                throw new Exception('INSERT ERROR -> TABLE: '. $table_name); 
             }
         }
     }
@@ -92,7 +92,7 @@ class fabCommandHandler
         }else{
             $ok = $this->db->pdbquery();
             if(!$ok){
-                throw new Exception('...'); 
+                throw new Exception('DB QUERY ERROR'); 
             }else{
                 return true;
             }

@@ -31,6 +31,8 @@ class textQueryHandlerTest extends \PHPUnit_Framework_TestCase {
         $autoloader->setConfig(array("plugins" => "C:/xampp/htdocs/c38/contentory/c_server/plugins/",
                                      "plugin_path" => array ("lw" => "C:/xampp/htdocs/c38/contentory/c_server/modules/lw/")));
         $this->textQueryHandler = new Fab\Domain\Text\Model\textQueryHandler($this->db);     
+        $this->textCommandHandler = new Fab\Domain\Text\Model\textCommandHandler($this->db);
+        $this->textCommandHandler->setDebug(false);
     }
 
     /**
@@ -46,16 +48,131 @@ class textQueryHandlerTest extends \PHPUnit_Framework_TestCase {
     /**
      * @todo Implement test().
      */
-    public function test()
+    public function testGetAllTextsByCategory()
     {
+        $this->createTable();
+        $array = array(
+                "key"       => "test key", 
+                "content"   => "ttttttttttttttttttteeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeessssssssssssssssssssssssssssssssssstttttttttttttttt   content", 
+                "language"  => "de", 
+                "category"  => "category1");
+        $this->fillTable($array);
+        
+        $array2 = array(
+                "key"       => "test key", 
+                "content"   => "ttttttttttttttttttteeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeessssssssssssssssssssssssssssssssssstttttttttttttttt   content", 
+                "language"  => "de", 
+                "category"  => "category2");
+        $this->fillTable($array2);
+        
+        $array3 = array(
+                "key"       => "test key", 
+                "content"   => "ttttttttttttttttttteeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeessssssssssssssssssssssssssssssssssstttttttttttttttt   content", 
+                "language"  => "en", 
+                "category"  => "category1");
+        $this->fillTable($array3);
+        
+        $array4 = array(
+                "key"       => "test key", 
+                "content"   => "ttttttttttttttttttteeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeessssssssssssssssssssssssssssssssssstttttttttttttttt   content", 
+                "language"  => "de", 
+                "category"  => "category4");
+        $this->fillTable($array4);
 
+        $result = $this->textQueryHandler->getAllTextsByCategory("category1");
+        unset($result[0]["id"]);
+        unset($result[0]["first_date"]);
+        unset($result[0]["last_date"]);
+        unset($result[1]["id"]);
+        unset($result[1]["first_date"]);
+        unset($result[1]["last_date"]);
+        
+        $assertedArray[] =  $array;
+        $assertedArray[] =  $array3;
+        
+        $this->assertEquals($assertedArray,$result);
+        
+        try{
+            $this->textQueryHandler->getAllTextsByCategory("nichtVorhanden");
+        } catch (Exception $e){
+            $thrownException = true;
+        }
+        $this->assertTrue($thrownException);
     }
     
-    public function getInstace($array)
+    public function testGetAllUniqueCategories()
     {
-        return new \LWddd\ValueObject($array);
+        $result = $this->textQueryHandler->getAllUniqueCategories();
+        foreach($result as $value){
+            $categories[] = $value["category"];
+        }
+        $this->assertEquals(array("category1","category2","category4"),$categories);
+    }
+    
+    public function testGetAllUniqueLanguages()
+    {
+        $result = $this->textQueryHandler->getAllUniqueLanguages();
+        foreach($result as $value){
+            $languages[] = $value["language"];
+        }
+        $this->assertEquals(array("de","en"),$languages);
+    }
+    
+    public function testLanguageExists()
+    {
+        $this->assertFalse($this->textQueryHandler->languageExists("fr"));
+        $this->assertTrue($this->textQueryHandler->languageExists("de"));
+    }
+    
+    public function testCategoryExists()
+    {
+        $this->assertFalse($this->textQueryHandler->categoryExists("abcdefh"));
+        $this->assertTrue($this->textQueryHandler->categoryExists("category4"));
+    }
+    
+    public function testGetTextById()
+    {
+        $result = $this->textQueryHandler->getTextById(1);
+        unset($result["id"]);
+        unset($result["first_date"]);
+        unset($result["last_date"]);
+        
+        $array = array(
+                "key"       => "test key", 
+                "content"   => "ttttttttttttttttttteeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeessssssssssssssssssssssssssssssssssstttttttttttttttt   content", 
+                "language"  => "de", 
+                "category"  => "category1");
+        
+        $this->assertEquals($array, $result);
+        
+        $this->assertEmpty($this->textQueryHandler->getTextById(10));
+    }
+    
+    public function testDropTable()
+    {
+        $this->db->setStatement("DROP TABLE t:fab_text ");
+        $this->assertTrue($this->db->pdbquery());
+    }
+    
+    public function createTable()
+    {
+        $this->assertTrue($this->textCommandHandler->createTable());
+        $this->assertTrue($this->db->tableExists($this->db->gt("fab_Text")));
     }
 
+    public function fillTable($array)
+    {
+        $this->db->setStatement("INSERT INTO t:fab_text ( `key`, content, language, category, first_date, last_date ) VALUES ( :key, :content, :language, :category, :first_date, :last_date ) ");
+        $this->db->bindParameter("key", "s", $array['key']);
+        $this->db->bindParameter("content", "s", $array['content']);
+        if($array['language'] == ""){
+            $this->db->bindParameter("language", "s", "de");
+        }else{
+            $this->db->bindParameter("language", "s", $array['language']);
+        }
+        $this->db->bindParameter("category", "s", $array['category']);
+        $this->db->bindParameter("first_date", "i", date("YmdHis"));
+        $this->db->bindParameter("last_date", "i", date("YmdHis"));
+        return $this->db->pdbquery();
+    }
 }
-
-?>

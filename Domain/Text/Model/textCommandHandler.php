@@ -20,7 +20,7 @@ class textCommandHandler extends fabCommandHandler
      */
     public function addText(ValueObject $entity)
     {
-        $this->db->setStatement("INSERT INTO t:fab_text ( key, content, language, category, first_date, last_date ) VALUES ( :key, :content, :language, :category, :first_date, :last_date ) ");
+        $this->db->setStatement("INSERT INTO t:fab_text ( `key`, content, language, category, first_date, last_date ) VALUES ( :key, :content, :language, :category, :first_date, :last_date ) ");
         $this->db->bindParameter("key", "s", $entity->getValueByKey('key'));
         $this->db->bindParameter("content", "s", $entity->getValueByKey('content'));
         if($entity->getValueByKey('language') == ""){
@@ -43,7 +43,7 @@ class textCommandHandler extends fabCommandHandler
      */
     public function saveText($id, ValueObject $entity)
     {
-        $this->db->setStatement("UPDATE t:fab_text SET key = :key, content = :content, language = :language, category = :category, last_date = :last_date WHERE id = :id ");
+        $this->db->setStatement("UPDATE t:fab_text SET `key` = :key, content = :content, language = :language, category = :category, last_date = :last_date WHERE id = :id ");
         $this->db->bindParameter("id", "i", $id);
         $this->db->bindParameter("key", "s", $entity->getValueByKey('key'));
         $this->db->bindParameter("content", "s", $entity->getValueByKey('content'));
@@ -76,12 +76,12 @@ class textCommandHandler extends fabCommandHandler
     {
         $table_create_statement = "CREATE TABLE IF NOT EXISTS ".$this->db->gt("fab_text")." (
                                   id int(11) NOT NULL AUTO_INCREMENT,
-                                  key varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+                                  `key` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
                                   content longtext CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
                                   language varchar(2) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
                                   category varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
-                                  first_date int(14) NOT NULL,
-                                  last_date int(14) NOT NULL,
+                                  first_date bigint(14) NOT NULL,
+                                  last_date bigint(14) NOT NULL,
                                   PRIMARY KEY (id)
                                 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ; ";
         

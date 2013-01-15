@@ -2,6 +2,7 @@
 
 namespace Fab\Domain\Text\Model;
 use \lw_registry as lw_registry;
+use \Exception as Exception;
 use \Fab\Library\fabQueryHandler as fabQueryHandler;
 
 class textQueryHandler extends fabQueryHandler
@@ -21,7 +22,7 @@ class textQueryHandler extends fabQueryHandler
     public function getAllTextsByCategory($category)
     {
         if (!$this->categoryExists($category)) {
-            throw new Exception('...');
+            throw new Exception('CATEGORY IS NOT EXISTING');
         }else{
             $this->db->setStatement("SELECT * FROM t:fab_text WHERE category = :category ");
             $this->db->bindParameter("category", "s", $category);
@@ -35,7 +36,7 @@ class textQueryHandler extends fabQueryHandler
      */
     public function getAllUniqueCategories()
     {
-        $this->baseGetAllUniqueValuesForAttribute("category", "fab_text");
+        return $this->baseGetAllUniqueValuesForAttribute("category", "fab_text");
     }
     
     /**
@@ -44,7 +45,7 @@ class textQueryHandler extends fabQueryHandler
      */
     public function getAllUniqueLanguages()
     {
-        $this->baseGetAllUniqueValuesForAttribute("language", "fab_text");
+        return $this->baseGetAllUniqueValuesForAttribute("language", "fab_text");
     }
     
     /**
@@ -54,7 +55,10 @@ class textQueryHandler extends fabQueryHandler
      */
     public function languageExists($lang)
     {
-        $languages = $this->getAllUniqueLanguages();
+        $result = $this->getAllUniqueLanguages();
+        foreach($result as $value){
+            $languages[] = $value["language"];
+        }
         if(is_array($languages)){
             if(in_array($lang, $languages)){
                 return true;
@@ -73,7 +77,10 @@ class textQueryHandler extends fabQueryHandler
      */
     public function categoryExists($category)
     {
-        $categories = $this->getAllUniqueCategories();
+        $result = $this->getAllUniqueCategories();
+        foreach($result as $value){
+            $categories[] = $value["category"];
+        }
         if(is_array($categories)){
             if(in_array($category, $categories)){
                 return true;
@@ -92,7 +99,7 @@ class textQueryHandler extends fabQueryHandler
      */
     public function getTextById($id)
     {
-        $this->baseGetEntryById($id, "fab_text");
+        return $this->baseGetEntryById($id, "fab_text");
     }
     
     /**

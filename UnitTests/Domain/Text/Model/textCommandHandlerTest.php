@@ -47,16 +47,148 @@ class textCommandHandlerTest extends \PHPUnit_Framework_TestCase {
     /**
      * @todo Implement test().
      */
-    public function test()
+    public function testCreateTable()
     {
-        
+        $this->assertTrue($this->textCommandHandler->createTable());
+        $this->assertTrue($this->db->tableExists($this->db->gt("fab_Text")));
     }
     
-    public function getInstace($array)
+    public function testAddText()
     {
-        return new \LWddd\ValueObject($array);
+        $array = array(
+                "key"       => "test key", 
+                "content"   => "ttttttttttttttttttteeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeessssssssssssssssssssssssssssssssssstttttttttttttttt   content", 
+                "language"  => "de", 
+                "category"  => "test category");
+        $this->fillTable($array);
+        
+        $array2 = array(
+                "key"       => "test key", 
+                "content"   => "ttttttttttttttttttteeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeessssssssssssssssssssssssssssssssssstttttttttttttttt   content", 
+                "language"  => "en", 
+                "category"  => "test category");
+        $this->fillTable($array2);
+        
+        $array3 = array(
+                "key"       => "test key", 
+                "content"   => "ttttttttttttttttttteeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeessssssssssssssssssssssssssssssssssstttttttttttttttt   content", 
+                "language"  => "de", 
+                "category"  => "test category2");
+        $this->fillTable($array3);
+        
+        $this->db->setStatement("SELECT * FROM t:fab_text ");
+        $result = $this->db->pselect();
+        
+        unset($result[0]["id"]);
+        unset($result[0]["first_date"]);
+        unset($result[0]["last_date"]);
+        unset($result[1]["id"]);
+        unset($result[1]["first_date"]);
+        unset($result[1]["last_date"]);
+        unset($result[2]["id"]);
+        unset($result[2]["first_date"]);
+        unset($result[2]["last_date"]);
+        
+        $assertedArray = array();
+        $array["language"] = "de";
+        $assertedArray[] = $array;
+        $assertedArray[] = $array2;
+        $assertedArray[] = $array3;
+        
+        $this->assertEquals($assertedArray, $result);
     }
+    
+    public function testSaveText()
+    {
+        $array = array(
+                "key"       => "updated key", 
+                "content"   => "updated content", 
+                "language"  => "de", 
+                "category"  => "test category");
+        
+        $textValueObjectMock = $this->getTextValueObjectMock($array);
+        $textValueObjectMock->expects($this->at(0))
+                            ->method("getValueByKey")
+                            ->will($this->returnValue($array["key"]));
+        $textValueObjectMock->expects($this->at(1))
+                            ->method("getValueByKey")
+                            ->will($this->returnValue($array["content"]));
+        $textValueObjectMock->expects($this->at(2))
+                            ->method("getValueByKey")
+                            ->will($this->returnValue($array["language"]));
+        $textValueObjectMock->expects($this->at(3))
+                            ->method("getValueByKey")
+                            ->will($this->returnValue($array["language"]));
+        $textValueObjectMock->expects($this->at(4))
+                            ->method("getValueByKey")
+                            ->will($this->returnValue($array["category"]));
+        $this->assertTrue($this->textCommandHandler->saveText(1,$textValueObjectMock));
+        
+        $this->db->setStatement("SELECT * FROM t:fab_text WHERE id = 1 ");
+        $result = $this->db->pselect1();
+        
+        unset($result["id"]);
+        unset($result["first_date"]);
+        unset($result["last_date"]);
+        
+        $this->assertEquals($array, $result);
+    }
+    
+    public function testDeleteText()
+    {
+        $textEntityMock = $this->getTextEntityMock();
+        $textEntityMock->expects($this->once())
+                       ->method("isDeleteable")
+                       ->will($this->returnValue(true));
+        $textEntityMock->expects($this->exactly(2))
+                       ->method("getId")
+                       ->will($this->returnValue(1));
 
+        $this->assertTrue($this->textCommandHandler->deleteText($textEntityMock));
+    }
+    
+    public function testDropTable()
+    {
+        $this->db->setStatement("DROP TABLE t:fab_text ");
+        $this->db->pdbquery();
+    }
+    
+    public function getTextEntityMock()
+    {
+        /* $this->getMock(
+         *      Name der zu mockenden Klasse,
+         *      array( Functionsnamen ),            [ leeres Array => alle Functionen werden gemockt]
+         *      array( uebergebene Konstuktor Argumente ),
+         *      "",                                 [ Klassenname des Mockobjektes ]
+         *      bool                                [ Den Konstruktor der Original Klasse aufrufen ]
+         *  );
+         */
+        return $this->getMock("\\Fab\\Domain\\Event\\Object\\event", array(), array(), "", false);
+    }
+    
+    public function getTextValueObjectMock($array)
+    {
+        return $this->getMock("\\LWddd\\ValueObject", array(), array($array), "", true);
+    }
+    
+    public function fillTable($array)
+    {
+        $textValueObjectMock = $this->getTextValueObjectMock($array);
+        $textValueObjectMock->expects($this->at(0))
+                            ->method("getValueByKey")
+                            ->will($this->returnValue($array["key"]));
+        $textValueObjectMock->expects($this->at(1))
+                            ->method("getValueByKey")
+                            ->will($this->returnValue($array["content"]));
+        $textValueObjectMock->expects($this->at(2))
+                            ->method("getValueByKey")
+                            ->will($this->returnValue($array["language"]));
+        $textValueObjectMock->expects($this->at(3))
+                            ->method("getValueByKey")
+                            ->will($this->returnValue($array["language"]));
+        $textValueObjectMock->expects($this->at(4))
+                            ->method("getValueByKey")
+                            ->will($this->returnValue($array["category"]));
+        $this->assertTrue($this->textCommandHandler->addText($textValueObjectMock));
+    }
 }
-
-?>
