@@ -1,5 +1,5 @@
 <?php
-namespace Fab\Service\TableInstaller;
+namespace Fab\Services\TableInstaller;
 use \Fab\Domain\Country\Model\countryCommandHandler as countryCommandHandler;
 use \Fab\Domain\Event\Model\eventCommandHandler as eventCommandHandler;
 use \Fab\Domain\Participant\Model\participantCommandHandler as participantCommandHandler;
