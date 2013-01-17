@@ -135,7 +135,7 @@ class eventCommandHandler extends fabCommandHandler
                                   last_date bigint(14) NOT NULL,
                                   PRIMARY KEY (id),
                                   UNIQUE KEY v_schluessel (v_schluessel)
-                                ) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ; ";
+                                ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1 ; ";
         
         $ok = $this->baseCreateTable("fab_tagungen", $table_create_statement);
         if($ok){

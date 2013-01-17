@@ -72,41 +72,43 @@ class participantQueryHandlerTest extends \PHPUnit_Framework_TestCase {
         
         $assertedArray = array(
             0 => array(
-                "event_id"          => 1,
-                "anrede"            => "Herr",
-                "sprache"           => "de",
-                "titel"             => "Prof.",
-                "nachname"          => "Meyer",
-                "vorname"           => "Karl",
-                "institut"          => "GB-F",
-                "unternehmen"       => "FZJ",
-                "strasse"           => "Wilhelm_Johnen-Str.",
-                "plz"               => "52428",
-                "ort"               => "Jülich",
-                "land"              => "de",
-                "mail"              => "m.mustermann@fzj-juelich.de",
-                "ust_id_nr"         => "986743-36436-34g",
-                "zahlweise"         => "K",
-                "teilnehmer_intern" => "1",
-                "betrag"            => "105,73"),
+                "event_id"              => 1,
+                "anrede"                => "Herr",
+                "sprache"               => "de",
+                "titel"                 => "Prof.",
+                "nachname"              => "Meyer",
+                "vorname"               => "Karl",
+                "institut"              => "GB-F",
+                "unternehmen"           => "FZentrumJuelich",
+                "unternehmenshortcut"   => "FZJ",
+                "strasse"               => "Wilhelm_Johnen-Str.",
+                "plz"                   => "52428",
+                "ort"                   => "Jülich",
+                "land"                  => "de",
+                "mail"                  => "m.mustermann@fzj-juelich.de",
+                "ust_id_nr"             => "986743-36436-34g",
+                "zahlweise"             => "K",
+                "teilnehmer_intern"     => "1",
+                "betrag"                => "105,73"),
             1 => array(
-                "event_id"          => 1,
-                "anrede"            => "Herr",
-                "sprache"           => "de",
-                "titel"             => "Prof.",
-                "nachname"          => "Meyer",
-                "vorname"           => "Karl",
-                "institut"          => "GB-F",
-                "unternehmen"       => "FZJ",
-                "strasse"           => "Wilhelm_Johnen-Str.",
-                "plz"               => "52428",
-                "ort"               => "Jülich",
-                "land"              => "de",
-                "mail"              => "m.mustermann@fzj-juelich.de",
-                "ust_id_nr"         => "986743-36436-34g",
-                "zahlweise"         => "K",
-                "teilnehmer_intern" => "1",
-                "betrag"            => "105,73")
+                "event_id"              => 1,
+                "anrede"                => "Herr",
+                "sprache"               => "de",
+                "titel"                 => "Prof.",
+                "nachname"              => "Meyer",
+                "vorname"               => "Karl",
+                "institut"              => "GB-F",
+                "unternehmen"           => "FZentrumJuelich",
+                "unternehmenshortcut"   => "FZJ",
+                "strasse"               => "Wilhelm_Johnen-Str.",
+                "plz"                   => "52428",
+                "ort"                   => "Jülich",
+                "land"                  => "de",
+                "mail"                  => "m.mustermann@fzj-juelich.de",
+                "ust_id_nr"             => "986743-36436-34g",
+                "zahlweise"             => "K",
+                "teilnehmer_intern"     => "1",
+                "betrag"                => "105,73")
         );
         
         $this->assertEquals($assertedArray, $result);
@@ -122,23 +124,24 @@ class participantQueryHandlerTest extends \PHPUnit_Framework_TestCase {
         unset($result["last_date"]);
         
         $assertedArray = array(
-                "event_id"          => 1,
-                "anrede"            => "Herr",
-                "sprache"           => "de",
-                "titel"             => "Prof.",
-                "nachname"          => "Meyer",
-                "vorname"           => "Karl",
-                "institut"          => "GB-F",
-                "unternehmen"       => "FZJ",
-                "strasse"           => "Wilhelm_Johnen-Str.",
-                "plz"               => "52428",
-                "ort"               => "Jülich",
-                "land"              => "de",
-                "mail"              => "m.mustermann@fzj-juelich.de",
-                "ust_id_nr"         => "986743-36436-34g",
-                "zahlweise"         => "K",
-                "teilnehmer_intern" => "1",
-                "betrag"            => "105,73");
+                "event_id"              => 1,
+                "anrede"                => "Herr",
+                "sprache"               => "de",
+                "titel"                 => "Prof.",
+                "nachname"              => "Meyer",
+                "vorname"               => "Karl",
+                "institut"              => "GB-F",
+                "unternehmen"           => "FZentrumJuelich",
+                "unternehmenshortcut"   => "FZJ",
+                "strasse"               => "Wilhelm_Johnen-Str.",
+                "plz"                   => "52428",
+                "ort"                   => "Jülich",
+                "land"                  => "de",
+                "mail"                  => "m.mustermann@fzj-juelich.de",
+                "ust_id_nr"             => "986743-36436-34g",
+                "zahlweise"             => "K",
+                "teilnehmer_intern"     => "1",
+                "betrag"                => "105,73");
         
         $this->assertEquals($assertedArray, $result);
     }
@@ -146,25 +149,26 @@ class participantQueryHandlerTest extends \PHPUnit_Framework_TestCase {
     public function fillTable($event_id)
     {
         $array = array(
-                "anrede"            => "Herr",
-                "sprache"           => "de",
-                "titel"             => "Prof.",
-                "nachname"          => "Meyer",
-                "vorname"           => "Karl",
-                "institut"          => "GB-F",
-                "unternehmen"       => "FZJ",
-                "strasse"           => "Wilhelm_Johnen-Str.",
-                "plz"               => "52428",
-                "ort"               => "Jülich",
-                "land"              => "de",
-                "mail"              => "m.mustermann@fzj-juelich.de",
-                "ust_id_nr"         => "986743-36436-34g",
-                "zahlweise"         => "K",
-                "teilnehmer_intern" => "1",
-                "betrag"            => "105,73"
+                "anrede"                => "Herr",
+                "sprache"               => "de",
+                "titel"                 => "Prof.",
+                "nachname"              => "Meyer",
+                "vorname"               => "Karl",
+                "institut"              => "GB-F",
+                "unternehmen"           => "FZentrumJuelich",
+                "unternehmenshortcut"   => "FZJ",
+                "strasse"               => "Wilhelm_Johnen-Str.",
+                "plz"                   => "52428",
+                "ort"                   => "Jülich",
+                "land"                  => "de",
+                "mail"                  => "m.mustermann@fzj-juelich.de",
+                "ust_id_nr"             => "986743-36436-34g",
+                "zahlweise"             => "K",
+                "teilnehmer_intern"     => "1",
+                "betrag"                => "105,73"
             );
         
-        $this->db->setStatement("INSERT INTO t:fab_teilnehmer ( event_id, anrede, sprache, titel, nachname, vorname, institut, unternehmen, strasse, plz, ort, land, mail, ust_id_nr, zahlweise, teilnehmer_intern, betrag, first_date, last_date ) VALUES ( :event_id, :anrede, :sprache, :titel, :nachname, :vorname, :institut, :unternehmen, :strasse, :plz, :ort, :land, :mail, :ust_id_nr, :zahlweise, :teilnehmer_intern, :betrag, :first_date, :last_date ) ");
+        $this->db->setStatement("INSERT INTO t:fab_teilnehmer ( event_id, anrede, sprache, titel, nachname, vorname, institut, unternehmen, unternehmenshortcut, strasse, plz, ort, land, mail, ust_id_nr, zahlweise, teilnehmer_intern, betrag, first_date, last_date ) VALUES ( :event_id, :anrede, :sprache, :titel, :nachname, :vorname, :institut, :unternehmen, :shortcut, :strasse, :plz, :ort, :land, :mail, :ust_id_nr, :zahlweise, :teilnehmer_intern, :betrag, :first_date, :last_date ) ");
         $this->db->bindParameter("event_id", "i", $event_id);
         $this->db->bindParameter("anrede", "s", $array['anrede']);
         $this->db->bindParameter("sprache", "s", $array['sprache']);
@@ -173,6 +177,7 @@ class participantQueryHandlerTest extends \PHPUnit_Framework_TestCase {
         $this->db->bindParameter("vorname", "s", $array['vorname']);
         $this->db->bindParameter("institut", "s", $array['institut']);
         $this->db->bindParameter("unternehmen", "s", $array['unternehmen']);
+        $this->db->bindParameter("shortcut", "s", $array['unternehmenshortcut']);
         $this->db->bindParameter("strasse", "s", $array['strasse']);
         $this->db->bindParameter("plz", "s", $array['plz']);
         $this->db->bindParameter("ort", "s", $array['ort']);

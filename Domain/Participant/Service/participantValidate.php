@@ -26,6 +26,7 @@ class participantValidate
                 "vorname",
                 "institut",
                 "unternehmen",
+                "unternehmenshortcut",
                 "strasse",
                 "plz",
                 "ort",
@@ -54,7 +55,6 @@ class participantValidate
                 $valid = false;
             }
         }
-        
         return $valid;
     }
     
@@ -134,6 +134,11 @@ class participantValidate
     public function unternehmenValidate($value)
     {
         return $this->defaultValidation("unternehmen", $value, 35);
+    }
+    
+    public function unternehmenshortcutValidate($value)
+    {
+        return $this->defaultValidation("unternehmenshortcut", $value, 10);
     }
     
     public function strasseValidate($value)

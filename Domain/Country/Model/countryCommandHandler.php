@@ -49,7 +49,7 @@ class countryCommandHandler extends fabCommandHandler
         $table_create_statement = "CREATE TABLE IF NOT EXISTS ".$this->db->gt("fab_laender")." (
                                   land varchar(2) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
                                   bezeichnung varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL
-                                    ) ENGINE=InnoDB DEFAULT CHARSET=latin1 ";
+                                    ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE utf8_unicode_ci ";
         
         $ok = $this->baseCreateTable("fab_laender", $table_create_statement);
         if($ok){

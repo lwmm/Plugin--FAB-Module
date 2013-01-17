@@ -83,7 +83,7 @@ class textCommandHandler extends fabCommandHandler
                                   first_date bigint(14) NOT NULL,
                                   last_date bigint(14) NOT NULL,
                                   PRIMARY KEY (id)
-                                ) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ; ";
+                                ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE utf8_unicode_ci AUTO_INCREMENT=1 ; ";
         
         $ok = $this->baseCreateTable("fab_text", $table_create_statement);
         if($ok){

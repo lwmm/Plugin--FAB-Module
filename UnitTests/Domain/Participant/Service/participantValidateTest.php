@@ -37,24 +37,25 @@ class participantValidateTest extends \PHPUnit_Framework_TestCase {
     public function testValidate()
     {
         $array = array(
-                "id"                => "",
-                "event_id"          => "1",
-                "anrede"            => "Herr",
-                "sprache"           => "de",
-                "titel"             => "Prof.",
-                "nachname"          => "Meyer",
-                "vorname"           => "Karl",
-                "institut"          => "GB-F",
-                "unternehmen"       => "FZJ",
-                "strasse"           => "Wilhelm_Johnen-Str.",
-                "plz"               => "52428",
-                "ort"               => "Jülich",
-                "land"              => "de",
-                "mail"              => "m.mustermann@fzj-juelich.de",
-                "ust_id_nr"         => "986743-36436-34g",
-                "zahlweise"         => "K",
-                "teilnehmer_intern" => "1",
-                "betrag"            => "105,73"
+                "id"                    => "",
+                "event_id"              => "1",
+                "anrede"                => "Herr",
+                "sprache"               => "de",
+                "titel"                 => "Prof.",
+                "nachname"              => "Meyer",
+                "vorname"               => "Karl",
+                "institut"              => "GB-F",
+                "unternehmen"           => "FZentrumJuelich",
+                "unternehmenshortcut"   => "FZJ",
+                "strasse"               => "Wilhelm_Johnen-Str.",
+                "plz"                   => "52428",
+                "ort"                   => "Jülich",
+                "land"                  => "de",
+                "mail"                  => "m.mustermann@fzj-juelich.de",
+                "ust_id_nr"             => "986743-36436-34g",
+                "zahlweise"             => "K",
+                "teilnehmer_intern"     => "1",
+                "betrag"                => "105,73"
             );
         
         $this->participantValidate->setValues($array);
@@ -62,24 +63,25 @@ class participantValidateTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals(array(), $this->participantValidate->getErrors());
         
         $array2 = array(
-                "id"                => "",
-                "event_id"          => "", #required
-                "anrede"            => "",
-                "sprache"           => "",
-                "titel"             => "",
-                "nachname"          => "", #required
-                "vorname"           => "", #required
-                "institut"          => "",
-                "unternehmen"       => "",
-                "strasse"           => "",
-                "plz"               => "",
-                "ort"               => "", #required
-                "land"              => "",
-                "mail"              => "", #required
-                "ust_id_nr"         => "",
-                "zahlweise"         => "", #required
-                "teilnehmer_intern" => "", #bool
-                "betrag"            => ""  #required
+                "id"                    => "",
+                "event_id"              => "", #required
+                "anrede"                => "",
+                "sprache"               => "",
+                "titel"                 => "",
+                "nachname"              => "", #required
+                "vorname"               => "", #required
+                "institut"              => "",
+                "unternehmen"           => "",
+                "unternehmenshortcut"   => "",
+                "strasse"               => "",
+                "plz"                   => "",
+                "ort"                   => "", #required
+                "land"                  => "",
+                "mail"                  => "", #required
+                "ust_id_nr"             => "",
+                "zahlweise"             => "", #required
+                "teilnehmer_intern"     => "", #bool
+                "betrag"                => ""  #required
             );
         
         $this->participantValidate->setValues($array2);
@@ -96,6 +98,7 @@ class participantValidateTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals($error["vorname"], array(1 => array("error" => 1, "options" => "")));
         $this->assertFalse(array_key_exists("institut", $error));
         $this->assertFalse(array_key_exists("unternehmen", $error));
+        $this->assertFalse(array_key_exists("unternehmenshortcut", $error));
         $this->assertFalse(array_key_exists("strasse", $error));
         $this->assertFalse(array_key_exists("plz", $error));
         $this->assertEquals($error["ort"], array(1 => array("error" => 1, "options" => "")));
@@ -216,6 +219,18 @@ class participantValidateTest extends \PHPUnit_Framework_TestCase {
         
         $this->assertFalse($this->participantValidate->unternehmenValidate("ForschungszentrumForschungszentrumForschungszentrum"));
         $this->error2LengthTest("unternehmen", 35, "ForschungszentrumForschungszentrumForschungszentrum");
+    }
+    
+    public function testunternehmenshortcutValidate()
+    {
+        $this->assertTrue($this->participantValidate->unternehmenshortcutValidate("FZJ"));
+        $this->assertFalse(array_key_exists("unternehmenshortcut", $this->participantValidate->getErrors()));
+        
+        $this->assertTrue($this->participantValidate->unternehmenshortcutValidate(""));
+        $this->assertFalse(array_key_exists("unternehmenshortcut", $this->participantValidate->getErrors()));
+        
+        $this->assertFalse($this->participantValidate->unternehmenshortcutValidate("Forschungszentrum"));
+        $this->error2LengthTest("unternehmenshortcut", 10, "Forschungszentrum");
     }
     
     public function teststrasseValidate()

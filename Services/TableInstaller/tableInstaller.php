@@ -18,8 +18,8 @@ class tableInstaller
         $eventCommandHandler = new eventCommandHandler($this->db);
         $participantCommandHandler = new participantCommandHandler($this->db);
         $textCommandHandler = new textCommandHandler($this->db);
-        
         $ok = $countryCommandHandler->createTable();
+        
         if(!$ok){
             throw new Exception('CREATE TABLE country');
         }

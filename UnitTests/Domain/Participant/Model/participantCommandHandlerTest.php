@@ -65,22 +65,23 @@ class participantCommandHandlerTest extends \PHPUnit_Framework_TestCase {
     public function testAddParticipant()
     {
         $array = array(
-                "anrede"            => "Herr",
-                "sprache"           => "de",
-                "titel"             => "Prof.",
-                "nachname"          => "Meyer",
-                "vorname"           => "Karl",
-                "institut"          => "GB-F",
-                "unternehmen"       => "FZJ",
-                "strasse"           => "Wilhelm_Johnen-Str.",
-                "plz"               => "52428",
-                "ort"               => "Jülich",
-                "land"              => "de",
-                "mail"              => "m.mustermann@fzj-juelich.de",
-                "ust_id_nr"         => "986743-36436-34g",
-                "zahlweise"         => "K",
-                "teilnehmer_intern" => "1",
-                "betrag"            => "105,73"
+                "anrede"                => "Herr",
+                "sprache"               => "de",
+                "titel"                 => "Prof.",
+                "nachname"              => "Meyer",
+                "vorname"               => "Karl",
+                "institut"              => "GB-F",
+                "unternehmen"           => "FZentrumJuelich",
+                "unternehmenshortcut"   => "FZJ",
+                "strasse"               => "Wilhelm_Johnen-Str.",
+                "plz"                   => "52428",
+                "ort"                   => "Jülich",
+                "land"                  => "de",
+                "mail"                  => "m.mustermann@fzj-juelich.de",
+                "ust_id_nr"             => "986743-36436-34g",
+                "zahlweise"             => "K",
+                "teilnehmer_intern"     => "1",
+                "betrag"                => "105,73"
             );
         
         $participantValueObjectMock = $this->getParticipantValueObjectMock($array);
@@ -107,29 +108,32 @@ class participantCommandHandlerTest extends \PHPUnit_Framework_TestCase {
                                    ->will($this->returnValue($array["unternehmen"]));
         $participantValueObjectMock->expects($this->at(7))
                                    ->method("getValueByKey")
-                                   ->will($this->returnValue($array["strasse"]));
+                                   ->will($this->returnValue($array["unternehmenshortcut"]));
         $participantValueObjectMock->expects($this->at(8))
                                    ->method("getValueByKey")
-                                   ->will($this->returnValue($array["plz"]));
+                                   ->will($this->returnValue($array["strasse"]));
         $participantValueObjectMock->expects($this->at(9))
                                    ->method("getValueByKey")
-                                   ->will($this->returnValue($array["ort"]));
+                                   ->will($this->returnValue($array["plz"]));
         $participantValueObjectMock->expects($this->at(10))
                                    ->method("getValueByKey")
-                                   ->will($this->returnValue($array["land"]));
+                                   ->will($this->returnValue($array["ort"]));
         $participantValueObjectMock->expects($this->at(11))
                                    ->method("getValueByKey")
-                                   ->will($this->returnValue($array["mail"]));
+                                   ->will($this->returnValue($array["land"]));
         $participantValueObjectMock->expects($this->at(12))
                                    ->method("getValueByKey")
-                                   ->will($this->returnValue($array["ust_id_nr"]));
+                                   ->will($this->returnValue($array["mail"]));
         $participantValueObjectMock->expects($this->at(13))
                                    ->method("getValueByKey")
-                                   ->will($this->returnValue($array["zahlweise"]));
+                                   ->will($this->returnValue($array["ust_id_nr"]));
         $participantValueObjectMock->expects($this->at(14))
                                    ->method("getValueByKey")
-                                   ->will($this->returnValue($array["teilnehmer_intern"]));
+                                   ->will($this->returnValue($array["zahlweise"]));
         $participantValueObjectMock->expects($this->at(15))
+                                   ->method("getValueByKey")
+                                   ->will($this->returnValue($array["teilnehmer_intern"]));
+        $participantValueObjectMock->expects($this->at(16))
                                    ->method("getValueByKey")
                                    ->will($this->returnValue($array["betrag"]));
         
@@ -142,23 +146,24 @@ class participantCommandHandlerTest extends \PHPUnit_Framework_TestCase {
        unset($result["last_date"]);
        
        $assertedArray = array(
-                "event_id"          => 1,
-                "anrede"            => "Herr",
-                "sprache"           => "de",
-                "titel"             => "Prof.",
-                "nachname"          => "Meyer",
-                "vorname"           => "Karl",
-                "institut"          => "GB-F",
-                "unternehmen"       => "FZJ",
-                "strasse"           => "Wilhelm_Johnen-Str.",
-                "plz"               => "52428",
-                "ort"               => "Jülich",
-                "land"              => "de",
-                "mail"              => "m.mustermann@fzj-juelich.de",
-                "ust_id_nr"         => "986743-36436-34g",
-                "zahlweise"         => "K",
-                "teilnehmer_intern" => "1",
-                "betrag"            => "105,73"
+                "event_id"              => 1,
+                "anrede"                => "Herr",
+                "sprache"               => "de",
+                "titel"                 => "Prof.",
+                "nachname"              => "Meyer",
+                "vorname"               => "Karl",
+                "institut"              => "GB-F",
+                "unternehmen"           => "FZentrumJuelich",
+                "unternehmenshortcut"   => "FZJ",
+                "strasse"               => "Wilhelm_Johnen-Str.",
+                "plz"                   => "52428",
+                "ort"                   => "Jülich",
+                "land"                  => "de",
+                "mail"                  => "m.mustermann@fzj-juelich.de",
+                "ust_id_nr"             => "986743-36436-34g",
+                "zahlweise"             => "K",
+                "teilnehmer_intern"     => "1",
+                "betrag"                => "105,73"
             );
        
         $this->assertEquals($assertedArray, $result);
@@ -169,22 +174,23 @@ class participantCommandHandlerTest extends \PHPUnit_Framework_TestCase {
         $this->fillTable(1);
         
        $array = array(
-                "anrede"            => "Frau",
-                "sprache"           => "de",
-                "titel"             => "Dr.",
-                "nachname"          => "Mueller",
-                "vorname"           => "Heike",
-                "institut"          => "BMBF",
-                "unternehmen"       => "FZJ",
-                "strasse"           => "Wilhelm_Johnen-Str.",
-                "plz"               => "52428",
-                "ort"               => "Jülich",
-                "land"              => "de",
-                "mail"              => "m.mustermann@fzj-juelich.de",
-                "ust_id_nr"         => "986743-36436-34g",
-                "zahlweise"         => "K",
-                "teilnehmer_intern" => "1",
-                "betrag"            => "105,73"
+                "anrede"                => "Frau",
+                "sprache"               => "de",
+                "titel"                 => "Dr.",
+                "nachname"              => "Mueller",
+                "vorname"               => "Heike",
+                "institut"              => "BMBF",
+                "unternehmen"           => "FZentrumJuelich",
+                "unternehmenshortcut"   => "FZJ",
+                "strasse"               => "Wilhelm_Johnen-Str.",
+                "plz"                   => "52428",
+                "ort"                   => "Jülich",
+                "land"                  => "de",
+                "mail"                  => "m.mustermann@fzj-juelich.de",
+                "ust_id_nr"             => "986743-36436-34g",
+                "zahlweise"             => "K",
+                "teilnehmer_intern"     => "1",
+                "betrag"                => "105,73"
             );
        
         $participantValueObjectMock = $this->getParticipantValueObjectMock($array);
@@ -211,29 +217,32 @@ class participantCommandHandlerTest extends \PHPUnit_Framework_TestCase {
                                    ->will($this->returnValue($array["unternehmen"]));
         $participantValueObjectMock->expects($this->at(7))
                                    ->method("getValueByKey")
-                                   ->will($this->returnValue($array["strasse"]));
+                                   ->will($this->returnValue($array["unternehmenshortcut"]));
         $participantValueObjectMock->expects($this->at(8))
                                    ->method("getValueByKey")
-                                   ->will($this->returnValue($array["plz"]));
+                                   ->will($this->returnValue($array["strasse"]));
         $participantValueObjectMock->expects($this->at(9))
                                    ->method("getValueByKey")
-                                   ->will($this->returnValue($array["ort"]));
+                                   ->will($this->returnValue($array["plz"]));
         $participantValueObjectMock->expects($this->at(10))
                                    ->method("getValueByKey")
-                                   ->will($this->returnValue($array["land"]));
+                                   ->will($this->returnValue($array["ort"]));
         $participantValueObjectMock->expects($this->at(11))
                                    ->method("getValueByKey")
-                                   ->will($this->returnValue($array["mail"]));
+                                   ->will($this->returnValue($array["land"]));
         $participantValueObjectMock->expects($this->at(12))
                                    ->method("getValueByKey")
-                                   ->will($this->returnValue($array["ust_id_nr"]));
+                                   ->will($this->returnValue($array["mail"]));
         $participantValueObjectMock->expects($this->at(13))
                                    ->method("getValueByKey")
-                                   ->will($this->returnValue($array["zahlweise"]));
+                                   ->will($this->returnValue($array["ust_id_nr"]));
         $participantValueObjectMock->expects($this->at(14))
                                    ->method("getValueByKey")
-                                   ->will($this->returnValue($array["teilnehmer_intern"]));
+                                   ->will($this->returnValue($array["zahlweise"]));
         $participantValueObjectMock->expects($this->at(15))
+                                   ->method("getValueByKey")
+                                   ->will($this->returnValue($array["teilnehmer_intern"]));
+        $participantValueObjectMock->expects($this->at(16))
                                    ->method("getValueByKey")
                                    ->will($this->returnValue($array["betrag"]));
         
@@ -246,23 +255,24 @@ class participantCommandHandlerTest extends \PHPUnit_Framework_TestCase {
        unset($result["last_date"]);
        
        $assertedArray = array(
-                "event_id"          => 1,
-                "anrede"            => "Frau",
-                "sprache"           => "de",
-                "titel"             => "Dr.",
-                "nachname"          => "Mueller",
-                "vorname"           => "Heike",
-                "institut"          => "BMBF",
-                "unternehmen"       => "FZJ",
-                "strasse"           => "Wilhelm_Johnen-Str.",
-                "plz"               => "52428",
-                "ort"               => "Jülich",
-                "land"              => "de",
-                "mail"              => "m.mustermann@fzj-juelich.de",
-                "ust_id_nr"         => "986743-36436-34g",
-                "zahlweise"         => "K",
-                "teilnehmer_intern" => "1",
-                "betrag"            => "105,73"
+                "event_id"              => 1,
+                "anrede"                => "Frau",
+                "sprache"               => "de",
+                "titel"                 => "Dr.",
+                "nachname"              => "Mueller",
+                "vorname"               => "Heike",
+                "institut"              => "BMBF",
+                "unternehmen"           => "FZentrumJuelich",
+                "unternehmenshortcut"   => "FZJ",
+                "strasse"               => "Wilhelm_Johnen-Str.",
+                "plz"                   => "52428",
+                "ort"                   => "Jülich",
+                "land"                  => "de",
+                "mail"                  => "m.mustermann@fzj-juelich.de",
+                "ust_id_nr"             => "986743-36436-34g",
+                "zahlweise"             => "K",
+                "teilnehmer_intern"     => "1",
+                "betrag"                => "105,73"
             );
         $this->assertEquals($assertedArray, $result);
     }
@@ -306,25 +316,26 @@ class participantCommandHandlerTest extends \PHPUnit_Framework_TestCase {
     public function fillTable($event_id)
     {
         $array = array(
-                "anrede"            => "Herr",
-                "sprache"           => "de",
-                "titel"             => "Prof.",
-                "nachname"          => "Meyer",
-                "vorname"           => "Karl",
-                "institut"          => "GB-F",
-                "unternehmen"       => "FZJ",
-                "strasse"           => "Wilhelm_Johnen-Str.",
-                "plz"               => "52428",
-                "ort"               => "Jülich",
-                "land"              => "de",
-                "mail"              => "m.mustermann@fzj-juelich.de",
-                "ust_id_nr"         => "986743-36436-34g",
-                "zahlweise"         => "K",
-                "teilnehmer_intern" => "1",
-                "betrag"            => "105,73"
+                "anrede"                => "Herr",
+                "sprache"               => "de",
+                "titel"                 => "Prof.",
+                "nachname"              => "Meyer",
+                "vorname"               => "Karl",
+                "institut"              => "GB-F",
+                "unternehmen"           => "FZentrumJuelich",
+                "unternehmenshortcut"   => "FZJ",
+                "strasse"               => "Wilhelm_Johnen-Str.",
+                "plz"                   => "52428",
+                "ort"                   => "Jülich",
+                "land"                  => "de",
+                "mail"                  => "m.mustermann@fzj-juelich.de",
+                "ust_id_nr"             => "986743-36436-34g",
+                "zahlweise"             => "K",
+                "teilnehmer_intern"     => "1",
+                "betrag"                => "105,73"
             );
         
-        $this->db->setStatement("INSERT INTO t:fab_teilnehmer ( event_id, anrede, sprache, titel, nachname, vorname, institut, unternehmen, strasse, plz, ort, land, mail, ust_id_nr, zahlweise, teilnehmer_intern, betrag, first_date, last_date ) VALUES ( :event_id, :anrede, :sprache, :titel, :nachname, :vorname, :institut, :unternehmen, :strasse, :plz, :ort, :land, :mail, :ust_id_nr, :zahlweise, :teilnehmer_intern, :betrag, :first_date, :last_date ) ");
+        $this->db->setStatement("INSERT INTO t:fab_teilnehmer ( event_id, anrede, sprache, titel, nachname, vorname, institut, unternehmen, unternehmenshortcut, strasse, plz, ort, land, mail, ust_id_nr, zahlweise, teilnehmer_intern, betrag, first_date, last_date ) VALUES ( :event_id, :anrede, :sprache, :titel, :nachname, :vorname, :institut, :unternehmen, :shortcut, :strasse, :plz, :ort, :land, :mail, :ust_id_nr, :zahlweise, :teilnehmer_intern, :betrag, :first_date, :last_date ) ");
         $this->db->bindParameter("event_id", "i", $event_id);
         $this->db->bindParameter("anrede", "s", $array['anrede']);
         $this->db->bindParameter("sprache", "s", $array['sprache']);
@@ -333,6 +344,7 @@ class participantCommandHandlerTest extends \PHPUnit_Framework_TestCase {
         $this->db->bindParameter("vorname", "s", $array['vorname']);
         $this->db->bindParameter("institut", "s", $array['institut']);
         $this->db->bindParameter("unternehmen", "s", $array['unternehmen']);
+        $this->db->bindParameter("shortcut", "s", $array['unternehmenshortcut']);
         $this->db->bindParameter("strasse", "s", $array['strasse']);
         $this->db->bindParameter("plz", "s", $array['plz']);
         $this->db->bindParameter("ort", "s", $array['ort']);
