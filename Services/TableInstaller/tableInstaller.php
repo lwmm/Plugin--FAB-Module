@@ -18,32 +18,65 @@ class tableInstaller
         $eventCommandHandler = new eventCommandHandler($this->db);
         $participantCommandHandler = new participantCommandHandler($this->db);
         $textCommandHandler = new textCommandHandler($this->db);
-        $ok = $countryCommandHandler->createTable();
         
-        if(!$ok){
+        $ok1 = $countryCommandHandler->createTable();        
+        if(!$ok1){
             throw new Exception('CREATE TABLE country');
+        }else{
+            if(!$this->AreCountriesImported()){
+                $ok2 = $countryCommandHandler->importCountries();
+                if(!$ok2){
+                    throw new Exception('IMPORT COUNTRIES');
+                }
+            }
         }
         
-        $ok = $countryCommandHandler->importCountries();
-        if(!$ok){
-            throw new Exception('IMPORT COUNTRIES');
-        }
-        
-        $ok = $eventCommandHandler->createTable();
-        if(!$ok){
+        $ok3 = $eventCommandHandler->createTable();
+        if(!$ok3){
             throw new Exception('CREATE TABLE event');
         }
         
-        $ok = $participantCommandHandler->createTable();
-        if(!$ok){
+        $ok4 = $participantCommandHandler->createTable();
+        if(!$ok4){
             throw new Exception('CREATE TABLE participant');
         }
         
-        $ok = $textCommandHandler->createTable();
-        if(!$ok){
+        $ok5 = $textCommandHandler->createTable();
+        if(!$ok5){
             throw new Exception('CREATE TABLE text');
         }
         
         return true;
+    }
+    
+    public function AreCountriesImported()
+    {
+        $data = array();
+        $file = fopen( dirname(__FILE__)."/../../Domain/Country/Model/data/countries.csv", 'r');
+        while (($line = fgetcsv($file,100,";")) !== FALSE) {
+            array_push($data, $line);
+        }
+        fclose($file);
+
+        $assertedArray = array();
+        foreach ($data as $value) {
+            array_push($assertedArray,array("land" => $value[0], "bezeichnung" => $value[1]));
+        }
+        
+        foreach ($assertedArray as $key => $value) {
+            $land[$key] = strtoupper($value["land"]);
+        }
+        array_multisort($land, SORT_ASC, $assertedArray);
+        
+        $countryQH = new \Fab\Domain\Country\Model\countryQueryHandler($this->db);
+        $result = $countryQH->getAllCountries();
+        
+        $diff = array_diff($assertedArray, $result);
+        
+        if($diff == array()){
+            return true;
+        }else{
+            return false;
+        }
     }
 }

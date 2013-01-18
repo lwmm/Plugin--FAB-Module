@@ -106,14 +106,14 @@
             </ul>
         </li>
         <li class="<!-- lw:var class_tagungen -->">fab_tagungen
-            <!-- lw:if demodata --><ul>
-                <li class="<!-- lw:var class_demodata -->" style="font-size:10px">tagungen demodata</li>
-            </ul><!-- lw:endif demodata -->
+            <!-- lw:if demodata_event --><ul>
+                <li class="<!-- lw:var class_demodata_event -->" style="font-size:10px">tagungen demodata</li>
+            </ul><!-- lw:endif demodata_event -->
         </li>
         <li class="<!-- lw:var class_teilnehmer -->">fab_teilnehmer
-            <!-- lw:if demodata --><ul>
-                <li class="<!-- lw:var class_demodata -->" style="font-size:10px">teilnehmer demodata</li>
-            </ul><!-- lw:endif demodata -->
+            <!-- lw:if demodata_participants --><ul>
+                <li class="<!-- lw:var class_demodata_participants -->" style="font-size:10px">teilnehmer demodata</li>
+            </ul><!-- lw:endif demodata_participants -->
         </li>
         <li class="<!-- lw:var class_text -->">fab_text</li>
     </ul>
@@ -122,8 +122,10 @@
         <div class="label">main table:</div> 
         <div class="abutton"><a href="#" onclick="self.location.href='<!-- lw:var button_link -->';"><!-- lw:var buttonname --></a></div>
     </div>
+    <!-- lw:if addDemoData -->
     <div class="button">
         <div class="label">demodata:</div> 
         <div class="abutton"><a href="#" onclick="self.location.href='<!-- lw:var button_link_demo -->';"><!-- lw:var buttonname_demo --></a></div>
     </div>
+    <!-- lw:endif addDemoData -->
 </div>
